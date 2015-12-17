@@ -1,11 +1,17 @@
+// Copyright (C) 2015 Sam Halliday
+// License: Apache-2.0
+
 import sbt._
 import Keys._
 
-trait SonatypeSupport {
+object SonatypeSupport {
+  val Apache2 = ("Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"))
+  val GPL3 = ("GPL 3.0" -> url("http://opensource.org/licenses/GPL-3.0"))
+
   def sonatype(
     ghUser: String,
     ghRepo: String,
-    license: (String, URL) = ("GPL 3.0" -> url("http://opensource.org/licenses/GPL-3.0"))
+    license: (String, URL)
   ) = Seq(
     publishMavenStyle := true,
     publishArtifact in Test := false,

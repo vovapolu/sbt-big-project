@@ -1,11 +1,15 @@
+// Copyright (C) 2015 Sam Halliday
+// License: Apache-2.0
+
 import sbt._
 import Keys._
 import com.typesafe.sbt.SbtScalariform
 import scalariform.formatter.preferences._
 import SbtScalariform.ScalariformKeys
 import ScriptedPlugin._
+import SonatypeSupport._
 
-object BigProjectBuild extends Build with SonatypeSupport {
+object BigProjectBuild extends Build {
 
   override val settings = super.settings ++ Seq(
     sbtPlugin := true,
@@ -18,7 +22,7 @@ object BigProjectBuild extends Build with SonatypeSupport {
       "-Xfatal-warnings",
       "-language:postfixOps", "-language:implicitConversions"
     )
-  ) ++ sonatype("fommil", "sbt-big-project")
+  ) ++ sonatype("fommil", "sbt-big-project", Apache2)
 
   lazy val root = (project in file(".")).enablePlugins(SbtScalariform).
     settings(scriptedSettings).

@@ -1,5 +1,5 @@
 // Copyright (C) 2015 Sam Halliday
-// License: GPL 3.0
+// License: Apache-2.0
 
 import sbt._
 import Keys._
