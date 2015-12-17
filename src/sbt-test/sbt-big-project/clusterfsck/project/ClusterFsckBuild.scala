@@ -49,7 +49,8 @@ object ClusterFsckBuild extends Build {
     scalaVersion := "2.10.6",
     version := "v1",
     // doesn't catch everything https://github.com/sbt/sbt/issues/840
-    ivyLoggingLevel := UpdateLogging.Quiet
+    ivyLoggingLevel := UpdateLogging.Quiet,
+    updateOptions := updateOptions.value.withCachedResolution(true)
   )
 
   override lazy val projects: Seq[Project] = structure.toSeq.map {
@@ -67,7 +68,8 @@ object ClusterFsckBuild extends Build {
           inConfig(Test)(testInstrumentation)
         ).settings(
             // install the custom `scripted' tasks
-            scriptedTasks
+            scriptedTasks,
+            updateOptions := updateOptions.value.withCachedResolution(true)
           )
   }.map { proj =>
     // generate the project
