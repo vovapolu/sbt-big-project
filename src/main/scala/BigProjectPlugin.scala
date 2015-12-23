@@ -2,6 +2,8 @@
 // License: Apache-2.0
 package fommil
 
+import org.apache.ivy.core.module.descriptor.ModuleDescriptor
+import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt._
 import Keys._
 
@@ -71,6 +73,94 @@ object BigProjectPlugin extends AutoPlugin {
     }
   }
 
+  // FIXME: strategies to invalidate these caches
+
+  /*
+   It's definitely one of these that's the entrance point to the subproject, and
+   causing transitive task creation joy.
+
+     *:projectDescriptors: 2.856385 ms      // TASK (not critical path)
+     compile:exportedProducts: 0.907261 ms  // TASK (on critical path, but maybe not the primary node)
+     *:ivyConfiguration: 0.353889 ms        // TASK
+     compile:unmanagedJars: 0.323248 ms     // TASK (probably not critical path)
+     *:ivySbt: 0.159503 ms                  // TASK (probably not critical path)
+     *:bootResolvers: 0.065265 ms           // TASK (probably not critical path)
+     *:ivyModule: 0.048709999999999996 ms   // TASK (probably not critical path)
+     *:projectDependencies: 0.039265 ms     // TASK (not critical path)
+     *:fullResolvers: 0.02361 ms            // TASK (probably not critical path)
+     *:allDependencies: 0.019998 ms         // TASK (blows up when cached)
+     compile:packageBinFile: 0.016877 ms    // SETTING
+     *:externalResolvers: 0.008927 ms       // TASK (probably not critical path)
+     *:projectResolver: 0.008799 ms         // TASK (probably not critical path)
+     *:moduleSettings: 0.0085 ms            // TASK (probably not critical path)
+
+   it is likely that an aggregate Task in the top-level project is calling these tasks
+   on each of the dependents, much like transitiveUpdate.
+
+   */
+
+  // not a critical node, but close!
+  val exportedProductsCache = new java.util.concurrent.ConcurrentHashMap[String, Classpath]()
+  def dynamicExportedProductsTask: Def.Initialize[Task[Classpath]] = Def.taskDyn {
+    val key = s"${thisProject.value.id}/${configuration.value}"
+    val jar = packageBinFile.value
+    val cached = exportedProductsCache.get(key)
+
+    if (jar.exists() && cached != null) Def.task {
+      streams.value.log.info(s"EXPORTEDPRODUCTS CACHE HIT $key")
+      cached
+    }
+    else Def.task {
+      streams.value.log.info(s"EXPORTEDPRODUCTS CALCULATING $key")
+      val calculated = (Classpaths.exportProductsTask).value
+      exportedProductsCache.put(key, calculated)
+      calculated
+    }
+  }
+
+  // also close...
+  val projectDescriptorsCache = new java.util.concurrent.ConcurrentHashMap[String, Map[ModuleRevisionId, ModuleDescriptor]]()
+  def dynamicProjectdescriptorsTask: Def.Initialize[Task[Map[ModuleRevisionId, ModuleDescriptor]]] = Def.taskDyn {
+    val key = s"${thisProject.value.id}/${configuration.value}"
+    val jar = packageBinFile.value
+    val cached = projectDescriptorsCache.get(key)
+
+    if (jar.exists() && cached != null) Def.task {
+      streams.value.log.info(s"PROJECTDESCRIPTORS CACHE HIT $key")
+      cached
+    }
+    else Def.task {
+      streams.value.log.info(s"PROJECTDESCRIPTORS CALCULATING $key")
+      val calculated = Classpaths.depMap.value
+      projectDescriptorsCache.put(key, calculated)
+      calculated
+    }
+  }
+
+  // This is definitely causing big traversals of subprojects.
+  // We should definitely cache this for the current project.
+  val transitiveUpdateCache = new java.util.concurrent.ConcurrentHashMap[String, Seq[UpdateReport]]()
+  def dynamicTransitiveUpdateTask(config: Option[Configuration]): Def.Initialize[Task[Seq[UpdateReport]]] = Def.taskDyn {
+    val key = s"${thisProject.value.id}/${config}" // HACK to support no-config
+    val cached = transitiveUpdateCache.get(key)
+
+    // note, must be in the dynamic task
+    val make = new ScopeFilter.Make {}
+    val selectDeps = ScopeFilter(make.inDependencies(ThisProject, includeRoot = false))
+
+    if (cached != null) Def.task {
+      streams.value.log.info(s"TRANSITIVEUPDATE CACHE HIT $key")
+      cached
+    }
+    else Def.task {
+      streams.value.log.info(s"TRANSITIVEUPDATE CALCULATING $key")
+      val allUpdates = update.?.all(selectDeps).value
+      val calculated = allUpdates.flatten ++ globalPluginUpdate.?.value
+      transitiveUpdateCache.put(key, calculated)
+      calculated
+    }
+  }
+
   /**
    * The default behaviour of `compile` leaves the `packageBin`
    * untouched, but we'd like to delete the `packageBin` on all
@@ -130,7 +220,17 @@ object BigProjectPlugin extends AutoPlugin {
     //update in phase := eclipseTestVisibilityTask(phase).value,
     //compile in phase := deleteBinOnCompileTask(phase).value,
     packageBinFile in phase := packageBinFileTask(phase).value
-  )
+  ) ++ inConfig(phase)(
+      Seq(
+        // FIXME: move everything to be inConfig defined from the outside
+        transitiveUpdate := dynamicTransitiveUpdateTask(Some(phase)).value,
+        exportedProducts := dynamicExportedProductsTask.value,
+        projectDescriptors := dynamicProjectdescriptorsTask.value
+      )
+    ) ++ Seq(
+        // intentionally not in a configuration
+        transitiveUpdate := dynamicTransitiveUpdateTask(None).value
+      )
 
   override val projectSettings: Seq[Setting[_]] = Seq(
     exportJars := true,
