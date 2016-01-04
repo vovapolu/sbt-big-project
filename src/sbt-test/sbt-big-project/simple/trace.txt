@@ -1,299 +1,1341 @@
 > d/compile
-REGISTERING <anon-2f9236d8>
-REGISTERING <anon-2f9236d8>
-REGISTERING d/compile:compile
-REGISTERING d/compile:compile
+REGISTERING <anon-8e0b048> with deps List(<anon-1a2d8488>) and List(<anon-1a2d8488>)
+REGISTERING <anon-8e0b048> with deps List(d/compile:compile) and List(d/compile:compile)
+REGISTERING d/compile:compile with deps List(<anon-62325b44>) and List(<anon-62325b44>)
+REGISTERING d/compile:compile with deps List() and List()
 STARTING d/compile:compile
 STARTING d/compile:compile
-REGISTERING d/compile:compile
-REGISTERING d/compile:incCompileSetup
-REGISTERING d/compile:compileAnalysisFilename
-REGISTERING */*:definesClass
-STARTING d/compile:compileAnalysisFilename
-REGISTERING */*:skip
-REGISTERING d/compile:dependencyClasspath
-REGISTERING d/compile:dependencyClasspath
-REGISTERING */*:settingsData
-REGISTERING */*:buildStructure
-REGISTERING state
-REGISTERING d/compile:dependencyClasspath
-STARTING */*:definesClass
-REGISTERING d/compile:incCompileSetup
-STARTING */*:skip
-REGISTERING streams-manager
-REGISTERING */*:compilerCache
-REGISTERING d/*:incOptions
-REGISTERING */*:incOptions
-REGISTERING d/compile:manipulateBytecode
-REGISTERING d/compile:compileIncremental
-REGISTERING d/compile:compile::compileInputs
-REGISTERING d/compile:scalacOptions
-REGISTERING d/compile:update
-REGISTERING d/compile:update
-REGISTERING */*:scalacOptions
-REGISTERING d/compile:scalacOptions
-REGISTERING */*:javacOptions
-REGISTERING d/compile:compile::compileInputs
-REGISTERING */*:compilers
-REGISTERING */*:compilers
-REGISTERING d/*:scalaInstance
-REGISTERING d/*:scalaInstance
-REGISTERING d/*:bootIvyConfiguration
-REGISTERING d/*:updateSbtClassifiers::ivyConfiguration
-REGISTERING d/*:updateSbtClassifiers::ivyConfiguration
-REGISTERING d/*:updateSbtClassifiers::externalResolvers
-REGISTERING d/*:externalResolvers
-REGISTERING */*:sourcePositionMappers
-REGISTERING d/compile:sources
-REGISTERING d/compile:managedSources
-REGISTERING d/compile:managedSources
-REGISTERING d/compile:unmanagedSources
-REGISTERING d/compile:unmanagedSources
-REGISTERING d/compile:compile::compilerReporter
-REGISTERING d/compile:compileIncremental
-REGISTERING d/compile:readAnalysis
+REGISTERING d/compile:compile with deps List(d/compile:compile) and List(d/compile:compile)
+REGISTERING d/compile:compile with deps List(d/compile:manipulateBytecode, d/compile:incCompileSetup) and List(d/compile:incCompileSetup, d/compile:manipulateBytecode)
+REGISTERING d/compile:incCompileSetup with deps List(d/*:incOptions, */*:compilerCache, d/compile:compileAnalysisFilename, <anon-e7529ac>, */*:skip, */*:definesClass, d/compile:dependencyClasspath) and List(*/*:compilerCache, d/compile:compileAnalysisFilename, */*:skip, */*:definesClass, <anon-e7529ac>, d/*:incOptions, d/compile:dependencyClasspath)
+REGISTERING */*:compilerCache with deps List(state) and List(state)
+REGISTERING state with deps List() and List()
+REGISTERING d/compile:compileAnalysisFilename with deps List() and List()
 STARTING state
-STARTING d/compile:dependencyClasspath
+REGISTERING */*:skip with deps List() and List()
+REGISTERING */*:definesClass with deps List() and List()
+STARTING d/compile:compileAnalysisFilename
+REGISTERING d/compile:incCompileSetup with deps List(streams-manager) and List(streams-manager)
+REGISTERING streams-manager with deps List() and List()
+STARTING */*:skip
+REGISTERING d/*:incOptions with deps List(*/*:incOptions) and List(*/*:incOptions)
+REGISTERING */*:incOptions with deps List() and List()
+STARTING */*:definesClass
+REGISTERING d/compile:dependencyClasspath with deps List(<anon-55154761>) and List(<anon-55154761>)
 STARTING streams-manager
+REGISTERING d/compile:dependencyClasspath with deps List(<anon-5e9db5e7>, */*:settingsData) and List(<anon-5e9db5e7>, */*:settingsData)
 STARTING */*:incOptions
+REGISTERING d/compile:dependencyClasspath with deps List() and List()
+STARTING d/compile:dependencyClasspath
+REGISTERING */*:settingsData with deps List(*/*:buildStructure) and List(*/*:buildStructure)
+REGISTERING */*:buildStructure with deps List(state) and List(state)
+REGISTERING d/compile:manipulateBytecode with deps List(d/compile:compileIncremental) and List(d/compile:compileIncremental)
+DELETED: List(Attributed(/home/fommil/Projects/sbt-big-project/src/sbt-test/sbt-big-project/simple/c/target/scala-2.10/c_2.10-v1.jar), Attributed(/home/fommil/Projects/sbt-big-project/src/sbt-test/sbt-big-project/simple/b/target/scala-2.10/b_2.10-v1.jar))
+REGISTERING d/compile:compileIncremental with deps List(d/compile:compile::compilerReporter, d/compile:readAnalysis, d/compile:compile::compileInputs, <anon-7d5a3b06>) and List(d/compile:readAnalysis, <anon-7d5a3b06>, d/compile:compile::compileInputs, d/compile:compile::compilerReporter)
+REGISTERING d/compile:readAnalysis with deps List(d/compile:incCompileSetup) and List(d/compile:incCompileSetup)
+REGISTERING d/compile:compileIncremental with deps List(streams-manager) and List(streams-manager)
+REGISTERING d/compile:compile::compileInputs with deps List(<anon-20b56542>, d/compile:incCompileSetup, */*:compilers, */*:sourcePositionMappers, */*:javacOptions, d/compile:scalacOptions, d/compile:sources, d/compile:dependencyClasspath) and List(<anon-20b56542>, d/compile:incCompileSetup, d/compile:scalacOptions, d/compile:sources, */*:sourcePositionMappers, d/compile:dependencyClasspath, */*:javacOptions, */*:compilers)
+REGISTERING d/compile:compile::compileInputs with deps List(streams-manager) and List(streams-manager)
+REGISTERING d/compile:scalacOptions with deps List(<anon-5a1216b0>, d/compile:update, */*:scalacOptions) and List(<anon-5a1216b0>, d/compile:update, */*:scalacOptions)
+REGISTERING d/compile:scalacOptions with deps List(*/*:settingsData) and List(*/*:settingsData)
+REGISTERING d/compile:update with deps List(<anon-4221663d>) and List(<anon-4221663d>)
+REGISTERING d/compile:update with deps List() and List()
+REGISTERING */*:scalacOptions with deps List() and List()
 STARTING d/compile:update
+REGISTERING d/compile:sources with deps List(d/compile:unmanagedSources, d/compile:managedSources) and List(d/compile:unmanagedSources, d/compile:managedSources)
+REGISTERING d/compile:unmanagedSources with deps List(d/compile:unmanagedSources) and List(d/compile:unmanagedSources)
 STARTING */*:scalacOptions
+REGISTERING d/compile:unmanagedSources with deps List() and List()
+REGISTERING d/compile:managedSources with deps List(<anon-67d6b0a6>) and List(<anon-67d6b0a6>)
+STARTING d/compile:unmanagedSources
+REGISTERING d/compile:managedSources with deps List() and List()
+REGISTERING */*:sourcePositionMappers with deps List() and List()
+REGISTERING */*:javacOptions with deps List() and List()
+REGISTERING */*:compilers with deps List(<anon-4619e076>, d/*:bootIvyConfiguration, d/*:scalaInstance) and List(d/*:scalaInstance, d/*:bootIvyConfiguration, <anon-4619e076>)
+REGISTERING d/*:scalaInstance with deps List(<anon-7c8d382e>, */*:settingsData) and List(<anon-7c8d382e>, */*:settingsData)
+REGISTERING d/*:scalaInstance with deps List() and List()
+REGISTERING d/*:bootIvyConfiguration with deps List(d/*:updateSbtClassifiers::ivyConfiguration) and List(d/*:updateSbtClassifiers::ivyConfiguration)
+REGISTERING d/*:updateSbtClassifiers::ivyConfiguration with deps List(<anon-297c0311>, d/*:updateSbtClassifiers::externalResolvers) and List(<anon-297c0311>, d/*:updateSbtClassifiers::externalResolvers)
+REGISTERING d/*:updateSbtClassifiers::ivyConfiguration with deps List(streams-manager) and List(streams-manager)
+STARTING d/compile:managedSources
+REGISTERING d/*:updateSbtClassifiers::externalResolvers with deps List(d/*:externalResolvers, */*:buildStructure) and List(*/*:buildStructure, d/*:externalResolvers)
+REGISTERING d/*:externalResolvers with deps List() and List()
+REGISTERING */*:compilers with deps List(streams-manager) and List(streams-manager)
+REGISTERING d/compile:compile::compilerReporter with deps List() and List()
+STARTING */*:sourcePositionMappers
 STARTING */*:javacOptions
 STARTING d/*:scalaInstance
 STARTING d/*:externalResolvers
-STARTING */*:sourcePositionMappers
-STARTING d/compile:managedSources
-STARTING d/compile:unmanagedSources
 STARTING d/compile:compile::compilerReporter
-STARTING */*:buildStructure
 STARTING */*:compilerCache
+STARTING */*:buildStructure
 STARTING d/compile:incCompileSetup
-STARTING d/compile:compile::compileInputs
-STARTING */*:compilers
-STARTING d/*:updateSbtClassifiers::ivyConfiguration
 STARTING d/compile:compileIncremental
+STARTING d/compile:compile::compileInputs
+STARTING d/*:updateSbtClassifiers::ivyConfiguration
+STARTING */*:compilers
 STARTING d/*:incOptions
 STARTING d/compile:update
-STARTING d/compile:managedSources
-REGISTERING d/*:update
 STARTING d/compile:unmanagedSources
-REGISTERING d/*:update
-REGISTERING d/*:ivyModule
-REGISTERING d/*:moduleSettings
-REGISTERING d/*:allDependencies
-REGISTERING d/*:projectDependencies
-REGISTERING d/*:projectDependencies
+STARTING d/compile:managedSources
 STARTING */*:settingsData
 STARTING d/*:updateSbtClassifiers::externalResolvers
-REGISTERING d/*:ivySbt
-STARTING d/*:projectDependencies
-REGISTERING d/*:ivySbt
-REGISTERING d/*:ivyConfiguration
-REGISTERING d/*:ivyConfiguration
-STARTING d/*:ivySbt
-REGISTERING d/*:fullResolvers
-REGISTERING d/*:bootResolvers
-STARTING d/*:ivyConfiguration
-REGISTERING d/*:projectResolver
-REGISTERING d/*:projectDescriptors
-REGISTERING d/*:projectDescriptors
+REGISTERING d/*:update with deps List(<anon-1098c1b1>, d/*:update) and List(d/*:update, <anon-1098c1b1>)
+REGISTERING d/*:update with deps List(*/*:skip, d/*:ivyModule, d/*:updateCacheName, execution-roots, d/*:dependencyCacheDirectory, state, d/*:update::unresolvedWarningConfiguration, <anon-5a98983b>, d/*:update, execution-roots, d/*:transitiveUpdate) and List(d/*:ivyModule, d/*:updateCacheName, d/*:dependencyCacheDirectory, d/*:transitiveUpdate, execution-roots, d/*:update, <anon-5a98983b>, d/*:update::unresolvedWarningConfiguration)
+REGISTERING d/*:ivyModule with deps List(d/*:moduleSettings, d/*:ivySbt) and List(d/*:ivySbt, d/*:moduleSettings)
+REGISTERING d/*:ivySbt with deps List(d/*:ivyConfiguration, d/*:credentials, <anon-7dc6ce7d>) and List(d/*:ivyConfiguration, d/*:credentials, <anon-7dc6ce7d>)
+REGISTERING d/*:ivyConfiguration with deps List(d/*:fullResolvers, <anon-521981d9>) and List(d/*:fullResolvers, <anon-521981d9>)
+REGISTERING d/*:fullResolvers with deps List(d/*:projectResolver, d/*:externalResolvers, d/*:bootResolvers) and List(d/*:bootResolvers, d/*:projectResolver)
+REGISTERING d/*:bootResolvers with deps List() and List()
 STARTING d/*:bootResolvers
-REGISTERING d/*:credentials
-REGISTERING d/*:credentials
-REGISTERING */*:credentials
-REGISTERING d/*:updateCacheName
-REGISTERING d/*:update::unresolvedWarningConfiguration
+REGISTERING d/*:projectResolver with deps List(d/*:projectDescriptors) and List(d/*:projectDescriptors)
+REGISTERING d/*:projectDescriptors with deps List(<anon-113ba21>) and List(<anon-113ba21>)
+REGISTERING d/*:projectDescriptors with deps List() and List()
+REGISTERING d/*:ivyConfiguration with deps List(streams-manager) and List()
 STARTING d/*:projectDescriptors
-REGISTERING d/*:dependencyPositions
-REGISTERING d/*:dependencyPositions
-REGISTERING d/*:dependencyCacheDirectory
+REGISTERING d/*:credentials with deps List(*/*:credentials, <anon-76737130>) and List(<anon-76737130>, */*:credentials)
+REGISTERING d/*:credentials with deps List() and List()
+REGISTERING */*:credentials with deps List() and List()
+STARTING d/*:ivyConfiguration
+REGISTERING d/*:ivySbt with deps List(streams-manager) and List()
 STARTING d/*:credentials
-REGISTERING d/*:transitiveUpdate
-REGISTERING d/*:transitiveUpdate
+REGISTERING d/*:moduleSettings with deps List(d/*:allDependencies) and List(d/*:allDependencies)
 STARTING */*:credentials
-REGISTERING d/*:transitiveUpdate
-REGISTERING execution-roots
+REGISTERING d/*:allDependencies with deps List(d/*:projectDependencies) and List(d/*:projectDependencies)
+STARTING d/*:ivySbt
+REGISTERING d/*:projectDependencies with deps List(*/*:settingsData) and List(*/*:settingsData)
+REGISTERING d/*:updateCacheName with deps List() and List()
 STARTING d/*:updateCacheName
-REGISTERING d/*:update
-REGISTERING d/*:update
-STARTING d/*:dependencyPositions
-REGISTERING d/*:update
+REGISTERING d/*:dependencyCacheDirectory with deps List(state) and List()
+REGISTERING d/*:transitiveUpdate with deps List(<anon-61cf142f>) and List(<anon-61cf142f>)
+REGISTERING d/*:transitiveUpdate with deps List(<anon-5c902a83>, */*:settingsData) and List(<anon-5c902a83>, */*:settingsData)
+REGISTERING d/*:transitiveUpdate with deps List() and List()
+REGISTERING execution-roots with deps List() and List()
+REGISTERING d/*:update with deps List(streams-manager) and List()
+REGISTERING d/*:update with deps List(<anon-980ac1f>, */*:settingsData) and List(*/*:settingsData, <anon-980ac1f>)
+REGISTERING d/*:update with deps List() and List()
+REGISTERING d/*:update::unresolvedWarningConfiguration with deps List(d/*:dependencyPositions) and List(d/*:dependencyPositions)
+REGISTERING d/*:dependencyPositions with deps List(d/*:updateCacheName, <anon-47cce306>, state) and List(<anon-47cce306>, d/*:updateCacheName)
+REGISTERING d/*:dependencyPositions with deps List(streams-manager) and List()
 STARTING d/*:dependencyCacheDirectory
 STARTING d/*:transitiveUpdate
 STARTING execution-roots
 STARTING d/*:update
 STARTING d/*:update
+STARTING d/*:dependencyPositions
 STARTING d/compile:sources
 STARTING d/compile:dependencyClasspath
 STARTING d/compile:scalacOptions
-REGISTERING d/compile:dependencyClasspath
-REGISTERING d/compile:dependencyClasspath
 STARTING d/*:scalaInstance
-REGISTERING d/compile:scalacOptions
-REGISTERING d/compile:scalacOptions
-STARTING d/*:updateSbtClassifiers::ivyConfiguration
-REGISTERING d/*:scalaInstance
 STARTING d/*:projectDependencies
+STARTING d/*:updateSbtClassifiers::ivyConfiguration
 STARTING d/*:projectDescriptors
 STARTING d/*:credentials
-REGISTERING d/*:projectDependencies
+STARTING d/*:transitiveUpdate
+STARTING d/*:update
 STARTING d/*:dependencyPositions
-REGISTERING d/*:projectDescriptors
-REGISTERING d/*:projectDescriptors
-REGISTERING d/*:projectDescriptors
-STARTING d/*:transitiveUpdate
-REGISTERING d/*:transitiveUpdate
-STARTING d/*:update
+REGISTERING d/compile:dependencyClasspath with deps List(d/compile:externalDependencyClasspath, d/compile:internalDependencyClasspath, <anon-795d43d9>) and List(d/compile:internalDependencyClasspath, <anon-795d43d9>, d/compile:externalDependencyClasspath)
+REGISTERING d/compile:internalDependencyClasspath with deps List(<anon-30c96ea9>, <anon-62a9d176>) and List(<anon-30c96ea9>, <anon-62a9d176>)
+REGISTERING d/compile:internalDependencyClasspath with deps List(d/compile:classpathConfiguration, */*:settingsData) and List(d/compile:classpathConfiguration)
+REGISTERING d/compile:classpathConfiguration with deps List(d/compile:update, <anon-19fdcaba>) and List(<anon-19fdcaba>, d/compile:update)
+REGISTERING d/compile:classpathConfiguration with deps List() and List()
+REGISTERING d/compile:internalDependencyClasspath with deps List(streams-manager) and List()
+REGISTERING d/compile:dependencyClasspath with deps List(streams-manager) and List()
+REGISTERING d/compile:externalDependencyClasspath with deps List(<anon-10ec54c3>, <anon-2005d3e0>) and List(<anon-2005d3e0>, <anon-10ec54c3>)
+REGISTERING d/compile:externalDependencyClasspath with deps List(streams-manager) and List()
+REGISTERING d/compile:externalDependencyClasspath with deps List(d/compile:unmanagedClasspath, d/compile:managedClasspath) and List(d/compile:unmanagedClasspath, d/compile:managedClasspath)
+REGISTERING d/compile:unmanagedClasspath with deps List(<anon-2f803d8>, <anon-68c06a2>) and List(<anon-68c06a2>, <anon-2f803d8>)
+REGISTERING d/compile:unmanagedClasspath with deps List(streams-manager) and List()
+REGISTERING d/compile:unmanagedClasspath with deps List(*/*:settingsData) and List()
+REGISTERING d/compile:managedClasspath with deps List(<anon-34ccce55>, <anon-7668edd7>) and List(<anon-34ccce55>, <anon-7668edd7>)
+REGISTERING d/compile:managedClasspath with deps List(d/compile:update, d/compile:classpathConfiguration) and List(d/compile:classpathConfiguration, d/compile:update)
+STARTING d/compile:classpathConfiguration
+REGISTERING d/compile:managedClasspath with deps List(streams-manager) and List()
+STARTING d/compile:internalDependencyClasspath
+REGISTERING d/compile:scalacOptions with deps List(<anon-6eec092>) and List(<anon-6eec092>)
+REGISTERING d/compile:scalacOptions with deps List() and List()
+REGISTERING d/*:scalaInstance with deps List() and List()
+REGISTERING d/*:projectDescriptors with deps List(<anon-1fc02a84>) and List(<anon-1fc02a84>)
+REGISTERING d/*:projectDescriptors with deps List(<anon-76a41af0>, */*:settingsData) and List(<anon-76a41af0>)
+REGISTERING d/*:projectDescriptors with deps List() and List()
+REGISTERING d/*:transitiveUpdate with deps List(*/*:compilers) and List()
+REGISTERING d/*:update with deps List() and List()
 STARTING d/compile:dependencyClasspath
-REGISTERING d/*:update
+STARTING d/compile:externalDependencyClasspath
+STARTING d/compile:unmanagedClasspath
+STARTING d/compile:unmanagedClasspath
+STARTING d/compile:managedClasspath
+REGISTERING d/compile:unmanagedClasspath with deps List(<anon-20e43235>) and List(<anon-20e43235>)
+REGISTERING d/compile:unmanagedClasspath with deps List(d/compile:unmanagedJars, c/compile:unmanagedJars, b/compile:unmanagedJars, a/compile:unmanagedJars) and List(b/compile:unmanagedJars, d/compile:unmanagedJars, a/compile:unmanagedJars, c/compile:unmanagedJars)
+REGISTERING b/compile:unmanagedJars with deps List(b/compile:unmanagedJars, <anon-66a5cbe5>) and List(<anon-66a5cbe5>, b/compile:unmanagedJars)
+REGISTERING b/compile:unmanagedJars with deps List(<anon-7ea0438c>, */*:settingsData) and List(<anon-7ea0438c>)
+REGISTERING b/compile:unmanagedJars with deps List() and List()
+REGISTERING b/compile:unmanagedJars with deps List(<anon-63f1d374>, <anon-54ad9ff9>) and List(<anon-63f1d374>, <anon-54ad9ff9>)
+REGISTERING b/compile:unmanagedJars with deps List() and List()
+REGISTERING b/compile:unmanagedJars with deps List(streams-manager) and List()
+REGISTERING d/compile:unmanagedJars with deps List(d/compile:unmanagedJars, <anon-43b1fdb7>) and List(d/compile:unmanagedJars, <anon-43b1fdb7>)
+REGISTERING d/compile:unmanagedJars with deps List(<anon-49afaf65>, <anon-6d5376b7>) and List(<anon-49afaf65>, <anon-6d5376b7>)
+REGISTERING d/compile:unmanagedJars with deps List() and List()
+REGISTERING d/compile:unmanagedJars with deps List(streams-manager) and List()
+REGISTERING d/compile:unmanagedJars with deps List(<anon-57b4fc1e>, */*:settingsData) and List(<anon-57b4fc1e>)
+REGISTERING d/compile:unmanagedJars with deps List() and List()
+REGISTERING a/compile:unmanagedJars with deps List(a/compile:unmanagedJars, <anon-2cb09f00>) and List(<anon-2cb09f00>, a/compile:unmanagedJars)
+REGISTERING a/compile:unmanagedJars with deps List(<anon-1aae50f9>, */*:settingsData) and List(<anon-1aae50f9>)
+REGISTERING a/compile:unmanagedJars with deps List() and List()
+REGISTERING a/compile:unmanagedJars with deps List(<anon-11885841>, <anon-24d998ba>) and List(<anon-11885841>, <anon-24d998ba>)
+REGISTERING a/compile:unmanagedJars with deps List() and List()
+REGISTERING a/compile:unmanagedJars with deps List(streams-manager) and List()
+REGISTERING c/compile:unmanagedJars with deps List(c/compile:unmanagedJars, <anon-5a07088b>) and List(c/compile:unmanagedJars, <anon-5a07088b>)
+REGISTERING c/compile:unmanagedJars with deps List(<anon-1cd7bc66>, <anon-34b56a5a>) and List(<anon-1cd7bc66>, <anon-34b56a5a>)
+REGISTERING c/compile:unmanagedJars with deps List() and List()
 STARTING d/compile:scalacOptions
+REGISTERING c/compile:unmanagedJars with deps List(streams-manager) and List()
 STARTING d/*:scalaInstance
-STARTING d/*:bootIvyConfiguration
-STARTING d/*:projectDependencies
-STARTING d/*:projectDescriptors
-STARTING d/*:update::unresolvedWarningConfiguration
-STARTING d/*:transitiveUpdate
-[info] TRANSITIVEUPDATE CACHE HIT d
-STARTING d/*:update
-STARTING d/compile:dependencyClasspath
-[info] DEPENDENCIESCLASSPATH CACHE HIT d/compile
-STARTING d/compile:scalacOptions
-STARTING */*:compilers
+REGISTERING c/compile:unmanagedJars with deps List(<anon-1ba00c0c>, */*:settingsData) and List(<anon-1ba00c0c>)
+REGISTERING c/compile:unmanagedJars with deps List() and List()
 STARTING d/*:allDependencies
+STARTING d/*:bootIvyConfiguration
 STARTING d/*:projectDescriptors
 STARTING d/*:transitiveUpdate
-REGISTERING d/*:projectDescriptors
-STARTING d/compile:dependencyClasspath
-REGISTERING d/*:projectDescriptors
+STARTING d/*:update
+STARTING d/*:update::unresolvedWarningConfiguration
+STARTING b/compile:unmanagedJars
+STARTING b/compile:unmanagedJars
+STARTING b/compile:unmanagedJars
+STARTING d/compile:unmanagedJars
+STARTING d/compile:unmanagedJars
+STARTING d/compile:unmanagedJars
+STARTING a/compile:unmanagedJars
+STARTING a/compile:unmanagedJars
+STARTING a/compile:unmanagedJars
+STARTING c/compile:unmanagedJars
+STARTING c/compile:unmanagedJars
+STARTING c/compile:unmanagedJars
+STARTING d/compile:scalacOptions
 STARTING d/*:moduleSettings
+STARTING */*:compilers
 STARTING d/*:projectDescriptors
-STARTING d/compile:incCompileSetup
+STARTING d/*:transitiveUpdate
+REGISTERING d/*:projectDescriptors with deps List(<anon-1c74eeb7>) and List(<anon-1c74eeb7>)
+STARTING b/compile:unmanagedJars
+REGISTERING d/*:projectDescriptors with deps List(streams-manager) and List()
+REGISTERING b/compile:unmanagedJars with deps List() and List()
+STARTING b/compile:unmanagedJars
+STARTING d/compile:unmanagedJars
+STARTING d/compile:unmanagedJars
+STARTING a/compile:unmanagedJars
+REGISTERING d/compile:unmanagedJars with deps List() and List()
+STARTING a/compile:unmanagedJars
+REGISTERING a/compile:unmanagedJars with deps List() and List()
+STARTING c/compile:unmanagedJars
+STARTING c/compile:unmanagedJars
 STARTING d/*:projectDescriptors
-[info] PROJECTDESCRIPTORS CACHE HIT d
-STARTING d/compile:readAnalysis
+REGISTERING c/compile:unmanagedJars with deps List() and List()
+STARTING b/compile:unmanagedJars
+STARTING d/compile:unmanagedJars
+STARTING a/compile:unmanagedJars
+STARTING c/compile:unmanagedJars
 STARTING d/*:projectDescriptors
+STARTING b/compile:unmanagedJars
+STARTING d/compile:unmanagedJars
+STARTING a/compile:unmanagedJars
+STARTING c/compile:unmanagedJars
+STARTING d/*:projectDescriptors
+STARTING d/compile:unmanagedClasspath
 STARTING d/*:projectResolver
+STARTING d/compile:unmanagedClasspath
 STARTING d/*:fullResolvers
+STARTING d/compile:unmanagedClasspath
 STARTING d/*:ivyConfiguration
 STARTING d/*:ivySbt
 STARTING d/*:ivyModule
 STARTING d/*:update
 STARTING d/*:update
 STARTING d/compile:scalacOptions
+STARTING d/compile:classpathConfiguration
+STARTING d/compile:internalDependencyClasspath
+REGISTERING d/compile:internalDependencyClasspath with deps List(<anon-5f9d29c4>) and List(<anon-5f9d29c4>)
+REGISTERING d/compile:internalDependencyClasspath with deps List(<anon-300566e>, <anon-68769265>, c/compile:exportedProducts, b/compile:exportedProducts, a/compile:exportedProducts) and List(<anon-68769265>, a/compile:exportedProducts, b/compile:exportedProducts, <anon-300566e>, c/compile:exportedProducts)
+REGISTERING d/compile:internalDependencyClasspath with deps List() and List()
+REGISTERING a/compile:exportedProducts with deps List(<anon-515a897c>, <anon-197d6cc9>) and List(<anon-197d6cc9>, <anon-515a897c>)
+REGISTERING a/compile:exportedProducts with deps List(streams-manager) and List()
+REGISTERING a/compile:exportedProducts with deps List(a/compile:compile, <anon-2057d8ec>) and List(a/compile:compile, <anon-2057d8ec>)
+REGISTERING a/compile:compile with deps List(<anon-d56d9f6>) and List(<anon-d56d9f6>)
+REGISTERING a/compile:compile with deps List() and List()
+REGISTERING a/compile:exportedProducts with deps List() and List()
+REGISTERING b/compile:exportedProducts with deps List(<anon-2b01bb54>, <anon-e822394>) and List(<anon-2b01bb54>, <anon-e822394>)
+REGISTERING b/compile:exportedProducts with deps List(b/compile:compile, <anon-5a36a405>) and List(b/compile:compile, <anon-5a36a405>)
+REGISTERING b/compile:compile with deps List(<anon-76320633>) and List(<anon-76320633>)
+REGISTERING b/compile:compile with deps List() and List()
+REGISTERING b/compile:exportedProducts with deps List() and List()
+REGISTERING b/compile:exportedProducts with deps List(streams-manager) and List()
+REGISTERING d/compile:internalDependencyClasspath with deps List() and List()
+REGISTERING c/compile:exportedProducts with deps List(<anon-3ef97efc>, <anon-46244e65>) and List(<anon-46244e65>, <anon-3ef97efc>)
+REGISTERING c/compile:exportedProducts with deps List(streams-manager) and List()
+REGISTERING c/compile:exportedProducts with deps List(c/compile:compile, <anon-31ee5a9>) and List(<anon-31ee5a9>, c/compile:compile)
+REGISTERING c/compile:exportedProducts with deps List() and List()
+REGISTERING c/compile:compile with deps List(<anon-491afa9b>) and List(<anon-491afa9b>)
+REGISTERING c/compile:compile with deps List() and List()
+STARTING d/compile:managedClasspath
+STARTING d/compile:internalDependencyClasspath
+STARTING a/compile:exportedProducts
+STARTING a/compile:compile
+STARTING a/compile:exportedProducts
+STARTING b/compile:compile
+REGISTERING a/compile:exportedProducts with deps List(a/compile:packageBin) and List(a/compile:packageBin)
+REGISTERING a/compile:packageBin with deps List(<anon-77ef7b2b>) and List(<anon-77ef7b2b>)
+REGISTERING a/compile:packageBin with deps List() and List()
+STARTING b/compile:exportedProducts
+STARTING b/compile:exportedProducts
+REGISTERING b/compile:exportedProducts with deps List(b/compile:packageBin) and List(b/compile:packageBin)
+STARTING d/compile:internalDependencyClasspath
+REGISTERING b/compile:packageBin with deps List(<anon-26415b5e>) and List(<anon-26415b5e>)
+REGISTERING b/compile:packageBin with deps List() and List()
+STARTING c/compile:exportedProducts
+STARTING c/compile:exportedProducts
+REGISTERING c/compile:exportedProducts with deps List(c/compile:packageBin) and List(c/compile:packageBin)
+STARTING c/compile:compile
+REGISTERING c/compile:packageBin with deps List(<anon-26aecf31>) and List(<anon-26aecf31>)
+REGISTERING c/compile:packageBin with deps List() and List()
+STARTING d/compile:managedClasspath
+STARTING a/compile:compile
+STARTING a/compile:packageBin
+REGISTERING a/compile:compile with deps List(a/compile:compile) and List(a/compile:compile)
+REGISTERING a/compile:compile with deps List(a/compile:manipulateBytecode, a/compile:incCompileSetup) and List(a/compile:incCompileSetup, a/compile:manipulateBytecode)
+REGISTERING a/compile:incCompileSetup with deps List(a/*:incOptions, */*:compilerCache, a/compile:compileAnalysisFilename, <anon-38e46ea>, */*:skip, */*:definesClass, a/compile:dependencyClasspath) and List(<anon-38e46ea>, a/*:incOptions, a/compile:dependencyClasspath, a/compile:compileAnalysisFilename)
+REGISTERING a/compile:incCompileSetup with deps List(streams-manager) and List()
+REGISTERING a/*:incOptions with deps List(*/*:incOptions) and List()
+REGISTERING a/compile:dependencyClasspath with deps List(<anon-7f5a5ef3>) and List(<anon-7f5a5ef3>)
+REGISTERING a/compile:dependencyClasspath with deps List(<anon-3d1b6816>, */*:settingsData) and List(<anon-3d1b6816>)
+REGISTERING a/compile:dependencyClasspath with deps List() and List()
+REGISTERING a/compile:compileAnalysisFilename with deps List() and List()
+REGISTERING a/compile:manipulateBytecode with deps List(a/compile:compileIncremental) and List(a/compile:compileIncremental)
+REGISTERING a/compile:compileIncremental with deps List(a/compile:compile::compilerReporter, a/compile:readAnalysis, a/compile:compile::compileInputs, <anon-67e03fe4>) and List(<anon-67e03fe4>, a/compile:compile::compileInputs, a/compile:compile::compilerReporter, a/compile:readAnalysis)
+REGISTERING a/compile:compileIncremental with deps List(streams-manager) and List()
+STARTING b/compile:compile
+STARTING b/compile:packageBin
+REGISTERING a/compile:compile::compileInputs with deps List(<anon-1ffcb4bb>, a/compile:incCompileSetup, */*:compilers, */*:sourcePositionMappers, */*:javacOptions, a/compile:scalacOptions, a/compile:sources, a/compile:dependencyClasspath) and List(a/compile:incCompileSetup, a/compile:sources, */*:compilers, a/compile:scalacOptions, <anon-1ffcb4bb>, a/compile:dependencyClasspath)
+REGISTERING a/compile:sources with deps List(a/compile:unmanagedSources, a/compile:managedSources) and List(a/compile:unmanagedSources, a/compile:managedSources)
+REGISTERING a/compile:unmanagedSources with deps List(a/compile:unmanagedSources) and List(a/compile:unmanagedSources)
+REGISTERING a/compile:unmanagedSources with deps List() and List()
+REGISTERING a/compile:managedSources with deps List(<anon-7f7eeaaf>) and List(<anon-7f7eeaaf>)
+REGISTERING a/compile:managedSources with deps List() and List()
+REGISTERING */*:compilers with deps List(<anon-51a42767>, a/*:bootIvyConfiguration, a/*:scalaInstance) and List(<anon-51a42767>, a/*:scalaInstance, a/*:bootIvyConfiguration)
+REGISTERING */*:compilers with deps List(streams-manager) and List()
+STARTING c/compile:packageBin
+REGISTERING a/*:scalaInstance with deps List(<anon-2ca93dee>, */*:settingsData) and List(<anon-2ca93dee>)
+REGISTERING a/*:scalaInstance with deps List() and List()
+STARTING c/compile:compile
+REGISTERING a/*:bootIvyConfiguration with deps List(a/*:updateSbtClassifiers::ivyConfiguration) and List(a/*:updateSbtClassifiers::ivyConfiguration)
+REGISTERING a/*:updateSbtClassifiers::ivyConfiguration with deps List(<anon-4746b319>, a/*:updateSbtClassifiers::externalResolvers) and List(a/*:updateSbtClassifiers::externalResolvers, <anon-4746b319>)
+STARTING d/compile:externalDependencyClasspath
+REGISTERING a/*:updateSbtClassifiers::externalResolvers with deps List(a/*:externalResolvers, */*:buildStructure) and List(a/*:externalResolvers)
+REGISTERING a/*:externalResolvers with deps List() and List()
+STARTING a/compile:incCompileSetup
+REGISTERING a/*:updateSbtClassifiers::ivyConfiguration with deps List(streams-manager) and List()
+STARTING a/*:incOptions
+REGISTERING a/compile:scalacOptions with deps List(<anon-341c8f67>, a/compile:update, */*:scalacOptions) and List(<anon-341c8f67>, a/compile:update)
+STARTING a/compile:dependencyClasspath
+REGISTERING a/compile:scalacOptions with deps List(*/*:settingsData) and List()
+DELETED: List()
+REGISTERING a/compile:update with deps List(<anon-fcdeb50>) and List(<anon-fcdeb50>)
+REGISTERING a/compile:update with deps List() and List()
+STARTING a/compile:compileAnalysisFilename
+REGISTERING a/compile:compile::compileInputs with deps List(streams-manager) and List()
+REGISTERING a/compile:compile::compilerReporter with deps List() and List()
+REGISTERING a/compile:readAnalysis with deps List(a/compile:incCompileSetup) and List(a/compile:incCompileSetup)
+REGISTERING b/compile:compile with deps List(b/compile:compile) and List(b/compile:compile)
+REGISTERING b/compile:compile with deps List(b/compile:manipulateBytecode, b/compile:incCompileSetup) and List(b/compile:manipulateBytecode, b/compile:incCompileSetup)
+REGISTERING b/compile:manipulateBytecode with deps List(b/compile:compileIncremental) and List(b/compile:compileIncremental)
+REGISTERING b/compile:compileIncremental with deps List(b/compile:compile::compilerReporter, b/compile:readAnalysis, b/compile:compile::compileInputs, <anon-53b42a0d>) and List(b/compile:readAnalysis, b/compile:compile::compileInputs, <anon-53b42a0d>, b/compile:compile::compilerReporter)
+REGISTERING b/compile:readAnalysis with deps List(b/compile:incCompileSetup) and List(b/compile:incCompileSetup)
+REGISTERING b/compile:incCompileSetup with deps List(b/*:incOptions, */*:compilerCache, b/compile:compileAnalysisFilename, <anon-45fdd38d>, */*:skip, */*:definesClass, b/compile:dependencyClasspath) and List(b/*:incOptions, <anon-45fdd38d>, b/compile:dependencyClasspath, b/compile:compileAnalysisFilename)
+STARTING a/compile:compileIncremental
+REGISTERING b/*:incOptions with deps List(*/*:incOptions) and List()
+STARTING a/compile:unmanagedSources
+REGISTERING b/compile:incCompileSetup with deps List(streams-manager) and List()
+REGISTERING b/compile:dependencyClasspath with deps List(<anon-e934485>) and List(<anon-e934485>)
+REGISTERING b/compile:dependencyClasspath with deps List(<anon-446dea16>, */*:settingsData) and List(<anon-446dea16>)
+REGISTERING b/compile:dependencyClasspath with deps List() and List()
+REGISTERING b/compile:compileAnalysisFilename with deps List() and List()
+REGISTERING b/compile:compile::compileInputs with deps List(<anon-3c22a99a>, b/compile:incCompileSetup, */*:compilers, */*:sourcePositionMappers, */*:javacOptions, b/compile:scalacOptions, b/compile:sources, b/compile:dependencyClasspath) and List(b/compile:sources, b/compile:scalacOptions, */*:compilers, <anon-3c22a99a>, b/compile:incCompileSetup, b/compile:dependencyClasspath)
+REGISTERING b/compile:sources with deps List(b/compile:unmanagedSources, b/compile:managedSources) and List(b/compile:unmanagedSources, b/compile:managedSources)
+REGISTERING b/compile:unmanagedSources with deps List(b/compile:unmanagedSources) and List(b/compile:unmanagedSources)
+REGISTERING b/compile:unmanagedSources with deps List() and List()
+REGISTERING b/compile:managedSources with deps List(<anon-579b1d86>) and List(<anon-579b1d86>)
+REGISTERING b/compile:managedSources with deps List() and List()
+REGISTERING b/compile:scalacOptions with deps List(<anon-6e18bc2f>, b/compile:update, */*:scalacOptions) and List(<anon-6e18bc2f>, b/compile:update)
+REGISTERING b/compile:scalacOptions with deps List(*/*:settingsData) and List()
+REGISTERING b/compile:update with deps List(<anon-3f7d20c5>) and List(<anon-3f7d20c5>)
+REGISTERING b/compile:update with deps List() and List()
+REGISTERING */*:compilers with deps List(<anon-3aee72d8>, b/*:bootIvyConfiguration, b/*:scalaInstance) and List(b/*:bootIvyConfiguration, b/*:scalaInstance, <anon-3aee72d8>)
+REGISTERING b/*:bootIvyConfiguration with deps List(b/*:updateSbtClassifiers::ivyConfiguration) and List(b/*:updateSbtClassifiers::ivyConfiguration)
+REGISTERING b/*:updateSbtClassifiers::ivyConfiguration with deps List(<anon-635f4be1>, b/*:updateSbtClassifiers::externalResolvers) and List(<anon-635f4be1>, b/*:updateSbtClassifiers::externalResolvers)
+REGISTERING b/*:updateSbtClassifiers::ivyConfiguration with deps List(streams-manager) and List()
+STARTING a/compile:managedSources
+REGISTERING b/*:updateSbtClassifiers::externalResolvers with deps List(b/*:externalResolvers, */*:buildStructure) and List(b/*:externalResolvers)
+STARTING */*:compilers
+REGISTERING b/*:externalResolvers with deps List() and List()
+REGISTERING b/*:scalaInstance with deps List(<anon-26a0068a>, */*:settingsData) and List(<anon-26a0068a>)
+STARTING a/*:scalaInstance
+REGISTERING b/*:scalaInstance with deps List() and List()
+STARTING a/*:externalResolvers
+REGISTERING */*:compilers with deps List(streams-manager) and List()
+REGISTERING b/compile:compile::compileInputs with deps List(streams-manager) and List()
+STARTING a/*:updateSbtClassifiers::ivyConfiguration
+REGISTERING b/compile:compileIncremental with deps List(streams-manager) and List()
+STARTING a/compile:scalacOptions
+REGISTERING b/compile:compile::compilerReporter with deps List() and List()
+REGISTERING c/compile:compile with deps List(c/compile:compile) and List(c/compile:compile)
+REGISTERING c/compile:compile with deps List(c/compile:manipulateBytecode, c/compile:incCompileSetup) and List(c/compile:incCompileSetup, c/compile:manipulateBytecode)
+REGISTERING c/compile:incCompileSetup with deps List(c/*:incOptions, */*:compilerCache, c/compile:compileAnalysisFilename, <anon-6a9e88f1>, */*:skip, */*:definesClass, c/compile:dependencyClasspath) and List(c/compile:compileAnalysisFilename, <anon-6a9e88f1>, c/compile:dependencyClasspath, c/*:incOptions)
+REGISTERING c/compile:compileAnalysisFilename with deps List() and List()
+REGISTERING c/compile:incCompileSetup with deps List(streams-manager) and List()
+REGISTERING c/compile:dependencyClasspath with deps List(<anon-591bff1d>) and List(<anon-591bff1d>)
+REGISTERING c/compile:dependencyClasspath with deps List(<anon-18a66406>, */*:settingsData) and List(<anon-18a66406>)
+STARTING a/compile:update
+REGISTERING c/compile:dependencyClasspath with deps List() and List()
+REGISTERING c/*:incOptions with deps List(*/*:incOptions) and List()
+STARTING a/compile:compile::compileInputs
+REGISTERING c/compile:manipulateBytecode with deps List(c/compile:compileIncremental) and List(c/compile:compileIncremental)
+STARTING a/compile:compile::compilerReporter
+REGISTERING c/compile:compileIncremental with deps List(c/compile:compile::compilerReporter, c/compile:readAnalysis, c/compile:compile::compileInputs, <anon-5b20024b>) and List(c/compile:compile::compilerReporter, c/compile:compile::compileInputs, <anon-5b20024b>, c/compile:readAnalysis)
+STARTING a/compile:packageBin
+REGISTERING c/compile:compile::compilerReporter with deps List() and List()
+STARTING b/*:incOptions
+REGISTERING c/compile:compile::compileInputs with deps List(<anon-2f8ede54>, c/compile:incCompileSetup, */*:compilers, */*:sourcePositionMappers, */*:javacOptions, c/compile:scalacOptions, c/compile:sources, c/compile:dependencyClasspath) and List(c/compile:incCompileSetup, c/compile:sources, */*:compilers, <anon-2f8ede54>, c/compile:dependencyClasspath, c/compile:scalacOptions)
+STARTING b/compile:incCompileSetup
+REGISTERING c/compile:sources with deps List(c/compile:unmanagedSources, c/compile:managedSources) and List(c/compile:managedSources, c/compile:unmanagedSources)
+STARTING b/compile:dependencyClasspath
+REGISTERING c/compile:managedSources with deps List(<anon-275860e9>) and List(<anon-275860e9>)
+DELETED: List()
+REGISTERING c/compile:managedSources with deps List() and List()
+STARTING b/compile:compileAnalysisFilename
+REGISTERING c/compile:unmanagedSources with deps List(c/compile:unmanagedSources) and List(c/compile:unmanagedSources)
+REGISTERING c/compile:unmanagedSources with deps List() and List()
+STARTING b/compile:unmanagedSources
+REGISTERING */*:compilers with deps List(<anon-5b6a9ef6>, c/*:bootIvyConfiguration, c/*:scalaInstance) and List(c/*:scalaInstance, <anon-5b6a9ef6>, c/*:bootIvyConfiguration)
+REGISTERING c/*:scalaInstance with deps List(<anon-154ea177>, */*:settingsData) and List(<anon-154ea177>)
+REGISTERING c/*:scalaInstance with deps List() and List()
+REGISTERING */*:compilers with deps List(streams-manager) and List()
+REGISTERING c/*:bootIvyConfiguration with deps List(c/*:updateSbtClassifiers::ivyConfiguration) and List(c/*:updateSbtClassifiers::ivyConfiguration)
+REGISTERING c/*:updateSbtClassifiers::ivyConfiguration with deps List(<anon-67398bad>, c/*:updateSbtClassifiers::externalResolvers) and List(c/*:updateSbtClassifiers::externalResolvers, <anon-67398bad>)
+STARTING b/compile:managedSources
+REGISTERING c/*:updateSbtClassifiers::externalResolvers with deps List(c/*:externalResolvers, */*:buildStructure) and List(c/*:externalResolvers)
+STARTING b/compile:scalacOptions
+REGISTERING c/*:externalResolvers with deps List() and List()
+REGISTERING c/*:updateSbtClassifiers::ivyConfiguration with deps List(streams-manager) and List()
+REGISTERING c/compile:compile::compileInputs with deps List(streams-manager) and List()
+REGISTERING c/compile:scalacOptions with deps List(<anon-33a1bb90>, c/compile:update, */*:scalacOptions) and List(<anon-33a1bb90>, c/compile:update)
+REGISTERING c/compile:scalacOptions with deps List(*/*:settingsData) and List()
+REGISTERING c/compile:update with deps List(<anon-18e0f894>) and List(<anon-18e0f894>)
+STARTING b/compile:update
+REGISTERING c/compile:update with deps List() and List()
+REGISTERING c/compile:compileIncremental with deps List(streams-manager) and List()
+STARTING b/*:updateSbtClassifiers::ivyConfiguration
+REGISTERING c/compile:readAnalysis with deps List(c/compile:incCompileSetup) and List(c/compile:incCompileSetup)
+STARTING b/*:externalResolvers
+STARTING b/*:scalaInstance
+STARTING */*:compilers
+STARTING b/compile:compile::compileInputs
+STARTING b/compile:compileIncremental
+REGISTERING a/compile:scalacOptions with deps List(<anon-7002dacc>) and List(<anon-7002dacc>)
+STARTING b/compile:compile::compilerReporter
+REGISTERING a/compile:scalacOptions with deps List() and List()
+STARTING b/compile:packageBin
+STARTING c/compile:packageBin
+REGISTERING a/compile:packageBin with deps List(<anon-66008321>) and List(<anon-66008321>)
+STARTING c/compile:compileAnalysisFilename
+REGISTERING a/compile:packageBin with deps List(<anon-22e8f04c>, */*:settingsData) and List(<anon-22e8f04c>)
+STARTING c/compile:incCompileSetup
+REGISTERING a/compile:packageBin with deps List() and List()
+STARTING c/compile:dependencyClasspath
+DELETED: List(Attributed(/home/fommil/Projects/sbt-big-project/src/sbt-test/sbt-big-project/simple/b/target/scala-2.10/b_2.10-v1.jar))
+REGISTERING b/compile:scalacOptions with deps List(<anon-15d25244>) and List(<anon-15d25244>)
+REGISTERING b/compile:scalacOptions with deps List() and List()
+REGISTERING b/compile:packageBin with deps List(<anon-70dbd79f>) and List(<anon-70dbd79f>)
+REGISTERING b/compile:packageBin with deps List(<anon-6a339bc1>, */*:settingsData) and List(<anon-6a339bc1>)
+REGISTERING b/compile:packageBin with deps List() and List()
+REGISTERING c/compile:packageBin with deps List(<anon-2fbc704a>) and List(<anon-2fbc704a>)
+REGISTERING c/compile:packageBin with deps List(<anon-169f4152>, */*:settingsData) and List(<anon-169f4152>)
+REGISTERING c/compile:packageBin with deps List() and List()
+STARTING c/*:incOptions
+STARTING c/compile:compile::compilerReporter
+STARTING c/compile:managedSources
+STARTING c/compile:unmanagedSources
+STARTING c/*:scalaInstance
+STARTING */*:compilers
+STARTING c/*:externalResolvers
+STARTING c/*:updateSbtClassifiers::ivyConfiguration
+STARTING c/compile:compile::compileInputs
+STARTING c/compile:scalacOptions
+STARTING c/compile:update
+STARTING c/compile:compileIncremental
+REGISTERING c/compile:scalacOptions with deps List(<anon-7951a08c>) and List(<anon-7951a08c>)
+REGISTERING c/compile:scalacOptions with deps List() and List()
+STARTING d/compile:externalDependencyClasspath
+STARTING a/compile:dependencyClasspath
+REGISTERING a/compile:dependencyClasspath with deps List(<anon-6af6a3b>) and List(<anon-6af6a3b>)
+REGISTERING a/compile:dependencyClasspath with deps List(streams-manager) and List()
+STARTING a/compile:unmanagedSources
+STARTING a/compile:managedSources
+STARTING a/*:scalaInstance
+STARTING a/*:updateSbtClassifiers::externalResolvers
+STARTING a/compile:scalacOptions
+REGISTERING a/*:scalaInstance with deps List() and List()
+STARTING a/compile:update
+STARTING a/compile:packageBin
+STARTING b/compile:dependencyClasspath
+STARTING b/compile:unmanagedSources
+REGISTERING a/*:update with deps List(<anon-2d7fe300>, a/*:update) and List(<anon-2d7fe300>, a/*:update)
+REGISTERING a/*:update with deps List(streams-manager) and List()
+STARTING b/compile:managedSources
+STARTING b/compile:scalacOptions
+STARTING b/compile:update
+REGISTERING a/*:update with deps List(*/*:skip, a/*:ivyModule, a/*:updateCacheName, execution-roots, a/*:dependencyCacheDirectory, state, a/*:update::unresolvedWarningConfiguration, <anon-5679e464>, a/*:update, execution-roots, a/*:transitiveUpdate) and List(a/*:update, a/*:updateCacheName, a/*:transitiveUpdate, <anon-5679e464>, a/*:ivyModule, a/*:dependencyCacheDirectory, a/*:update::unresolvedWarningConfiguration)
+REGISTERING a/*:updateCacheName with deps List() and List()
+REGISTERING a/*:transitiveUpdate with deps List(<anon-7acb0a44>) and List(<anon-7acb0a44>)
+STARTING b/*:updateSbtClassifiers::externalResolvers
+REGISTERING a/*:transitiveUpdate with deps List(<anon-4d20d8e6>, */*:settingsData) and List(<anon-4d20d8e6>)
+STARTING b/*:scalaInstance
+REGISTERING a/*:transitiveUpdate with deps List() and List()
+STARTING b/compile:packageBin
+REGISTERING a/*:update with deps List(<anon-102bce96>, */*:settingsData) and List(<anon-102bce96>)
+STARTING c/compile:packageBin
+REGISTERING a/*:update with deps List() and List()
+STARTING c/compile:dependencyClasspath
+REGISTERING a/*:ivyModule with deps List(a/*:moduleSettings, a/*:ivySbt) and List(a/*:moduleSettings, a/*:ivySbt)
+REGISTERING a/*:moduleSettings with deps List(a/*:allDependencies) and List(a/*:allDependencies)
+REGISTERING a/*:allDependencies with deps List(a/*:projectDependencies) and List(a/*:projectDependencies)
+STARTING c/compile:managedSources
+REGISTERING a/*:projectDependencies with deps List(*/*:settingsData) and List()
+STARTING c/compile:unmanagedSources
+REGISTERING a/*:ivySbt with deps List(a/*:ivyConfiguration, a/*:credentials, <anon-6fc44cb6>) and List(a/*:ivyConfiguration, a/*:credentials, <anon-6fc44cb6>)
+REGISTERING a/*:ivyConfiguration with deps List(a/*:fullResolvers, <anon-6655b4e6>) and List(<anon-6655b4e6>, a/*:fullResolvers)
+REGISTERING a/*:ivyConfiguration with deps List(streams-manager) and List()
+STARTING c/*:scalaInstance
+STARTING c/*:updateSbtClassifiers::externalResolvers
+REGISTERING a/*:fullResolvers with deps List(a/*:projectResolver, a/*:externalResolvers, a/*:bootResolvers) and List(a/*:projectResolver, a/*:bootResolvers)
+STARTING c/compile:scalacOptions
+STARTING c/compile:update
+STARTING a/compile:dependencyClasspath
+REGISTERING a/*:projectResolver with deps List(a/*:projectDescriptors) and List(a/*:projectDescriptors)
+REGISTERING a/*:projectDescriptors with deps List(<anon-362ad436>) and List(<anon-362ad436>)
+REGISTERING a/*:projectDescriptors with deps List() and List()
+REGISTERING a/*:bootResolvers with deps List() and List()
+REGISTERING a/*:credentials with deps List(*/*:credentials, <anon-b6a20ce>) and List(<anon-b6a20ce>)
+REGISTERING a/*:credentials with deps List() and List()
+REGISTERING a/*:ivySbt with deps List(streams-manager) and List()
+REGISTERING a/*:dependencyCacheDirectory with deps List(state) and List()
+REGISTERING a/*:update::unresolvedWarningConfiguration with deps List(a/*:dependencyPositions) and List(a/*:dependencyPositions)
+REGISTERING a/*:dependencyPositions with deps List(a/*:updateCacheName, <anon-15b54cb7>, state) and List(a/*:updateCacheName, <anon-15b54cb7>)
+REGISTERING a/*:dependencyPositions with deps List(streams-manager) and List()
+REGISTERING b/compile:dependencyClasspath with deps List(<anon-2a58d00a>) and List(<anon-2a58d00a>)
+REGISTERING b/compile:dependencyClasspath with deps List(streams-manager) and List()
+REGISTERING b/*:update with deps List(<anon-32441ed4>, b/*:update) and List(<anon-32441ed4>, b/*:update)
+REGISTERING b/*:update with deps List(streams-manager) and List()
+REGISTERING b/*:update with deps List(*/*:skip, b/*:ivyModule, b/*:updateCacheName, execution-roots, b/*:dependencyCacheDirectory, state, b/*:update::unresolvedWarningConfiguration, <anon-55a46bf3>, b/*:update, execution-roots, b/*:transitiveUpdate) and List(b/*:dependencyCacheDirectory, b/*:updateCacheName, <anon-55a46bf3>, b/*:update, b/*:transitiveUpdate, b/*:ivyModule, b/*:update::unresolvedWarningConfiguration)
+REGISTERING b/*:dependencyCacheDirectory with deps List(state) and List()
+REGISTERING b/*:updateCacheName with deps List() and List()
+REGISTERING b/*:update with deps List(<anon-536d153b>, */*:settingsData) and List(<anon-536d153b>)
+REGISTERING b/*:update with deps List() and List()
+REGISTERING b/*:transitiveUpdate with deps List(<anon-76093fa9>) and List(<anon-76093fa9>)
+REGISTERING b/*:transitiveUpdate with deps List(<anon-6f823df7>, */*:settingsData) and List(<anon-6f823df7>)
+REGISTERING b/*:transitiveUpdate with deps List() and List()
+REGISTERING b/*:ivyModule with deps List(b/*:moduleSettings, b/*:ivySbt) and List(b/*:ivySbt, b/*:moduleSettings)
+REGISTERING b/*:ivySbt with deps List(b/*:ivyConfiguration, b/*:credentials, <anon-55ed76e6>) and List(b/*:ivyConfiguration, <anon-55ed76e6>, b/*:credentials)
+REGISTERING b/*:ivyConfiguration with deps List(b/*:fullResolvers, <anon-34949460>) and List(<anon-34949460>, b/*:fullResolvers)
+REGISTERING b/*:ivyConfiguration with deps List(streams-manager) and List()
+REGISTERING b/*:fullResolvers with deps List(b/*:projectResolver, b/*:externalResolvers, b/*:bootResolvers) and List(b/*:bootResolvers, b/*:projectResolver)
+REGISTERING b/*:bootResolvers with deps List() and List()
+REGISTERING b/*:projectResolver with deps List(b/*:projectDescriptors) and List(b/*:projectDescriptors)
+REGISTERING b/*:projectDescriptors with deps List(<anon-5d3b0f8a>) and List(<anon-5d3b0f8a>)
+REGISTERING b/*:projectDescriptors with deps List() and List()
+REGISTERING b/*:ivySbt with deps List(streams-manager) and List()
+REGISTERING b/*:credentials with deps List(*/*:credentials, <anon-4b50ebea>) and List(<anon-4b50ebea>)
+REGISTERING b/*:credentials with deps List() and List()
+REGISTERING b/*:moduleSettings with deps List(b/*:allDependencies) and List(b/*:allDependencies)
+REGISTERING b/*:allDependencies with deps List(b/*:projectDependencies) and List(b/*:projectDependencies)
+REGISTERING b/*:projectDependencies with deps List(*/*:settingsData) and List()
+REGISTERING b/*:update::unresolvedWarningConfiguration with deps List(b/*:dependencyPositions) and List(b/*:dependencyPositions)
+REGISTERING b/*:dependencyPositions with deps List(b/*:updateCacheName, <anon-74a46f81>, state) and List(<anon-74a46f81>, b/*:updateCacheName)
+REGISTERING b/*:dependencyPositions with deps List(streams-manager) and List()
+REGISTERING b/*:scalaInstance with deps List() and List()
+REGISTERING c/compile:dependencyClasspath with deps List(c/compile:externalDependencyClasspath, c/compile:internalDependencyClasspath, <anon-71a18feb>) and List(c/compile:internalDependencyClasspath, <anon-71a18feb>, c/compile:externalDependencyClasspath)
+REGISTERING c/compile:internalDependencyClasspath with deps List(<anon-66032b8d>, <anon-7c1a5092>) and List(<anon-66032b8d>, <anon-7c1a5092>)
+REGISTERING c/compile:internalDependencyClasspath with deps List(c/compile:classpathConfiguration, */*:settingsData) and List(c/compile:classpathConfiguration)
+STARTING a/compile:sources
+REGISTERING c/compile:classpathConfiguration with deps List(c/compile:update, <anon-26652743>) and List(<anon-26652743>, c/compile:update)
+STARTING a/*:scalaInstance
+REGISTERING c/compile:classpathConfiguration with deps List() and List()
+REGISTERING c/compile:internalDependencyClasspath with deps List(streams-manager) and List()
+REGISTERING c/compile:dependencyClasspath with deps List(streams-manager) and List()
+REGISTERING c/compile:externalDependencyClasspath with deps List(<anon-1d4ee7d7>, <anon-6d7e2c53>) and List(<anon-6d7e2c53>, <anon-1d4ee7d7>)
+REGISTERING c/compile:externalDependencyClasspath with deps List(streams-manager) and List()
+REGISTERING c/compile:externalDependencyClasspath with deps List(c/compile:unmanagedClasspath, c/compile:managedClasspath) and List(c/compile:managedClasspath, c/compile:unmanagedClasspath)
+REGISTERING c/compile:managedClasspath with deps List(<anon-37acf9b1>, <anon-279e9c95>) and List(<anon-37acf9b1>, <anon-279e9c95>)
+REGISTERING c/compile:managedClasspath with deps List(c/compile:update, c/compile:classpathConfiguration) and List(c/compile:classpathConfiguration, c/compile:update)
+REGISTERING c/compile:managedClasspath with deps List(streams-manager) and List()
+REGISTERING c/compile:unmanagedClasspath with deps List(<anon-1c027237>, <anon-4cb37177>) and List(<anon-1c027237>, <anon-4cb37177>)
+REGISTERING c/compile:unmanagedClasspath with deps List(*/*:settingsData) and List()
+REGISTERING c/compile:unmanagedClasspath with deps List(streams-manager) and List()
+REGISTERING c/*:scalaInstance with deps List() and List()
+REGISTERING c/*:update with deps List(<anon-7d7f49f3>, c/*:update) and List(<anon-7d7f49f3>, c/*:update)
+STARTING a/*:updateSbtClassifiers::ivyConfiguration
+REGISTERING c/*:update with deps List(streams-manager) and List()
+REGISTERING c/*:update with deps List(*/*:skip, c/*:ivyModule, c/*:updateCacheName, execution-roots, c/*:dependencyCacheDirectory, state, c/*:update::unresolvedWarningConfiguration, <anon-62a9e9bf>, c/*:update, execution-roots, c/*:transitiveUpdate) and List(c/*:updateCacheName, c/*:dependencyCacheDirectory, c/*:update, c/*:transitiveUpdate, c/*:ivyModule, c/*:update::unresolvedWarningConfiguration, <anon-62a9e9bf>)
+REGISTERING c/*:updateCacheName with deps List() and List()
+REGISTERING c/*:dependencyCacheDirectory with deps List(state) and List()
+REGISTERING c/*:transitiveUpdate with deps List(<anon-113a7d12>) and List(<anon-113a7d12>)
+REGISTERING c/*:transitiveUpdate with deps List(<anon-299022a9>, */*:settingsData) and List(<anon-299022a9>)
+STARTING a/compile:scalacOptions
+REGISTERING c/*:transitiveUpdate with deps List() and List()
+REGISTERING c/*:ivyModule with deps List(c/*:moduleSettings, c/*:ivySbt) and List(c/*:ivySbt, c/*:moduleSettings)
+REGISTERING c/*:ivySbt with deps List(c/*:ivyConfiguration, c/*:credentials, <anon-749054a3>) and List(<anon-749054a3>, c/*:ivyConfiguration, c/*:credentials)
+REGISTERING c/*:ivySbt with deps List(streams-manager) and List()
+REGISTERING c/*:ivyConfiguration with deps List(c/*:fullResolvers, <anon-331b0bfd>) and List(c/*:fullResolvers, <anon-331b0bfd>)
+REGISTERING c/*:fullResolvers with deps List(c/*:projectResolver, c/*:externalResolvers, c/*:bootResolvers) and List(c/*:bootResolvers, c/*:projectResolver)
+REGISTERING c/*:bootResolvers with deps List() and List()
+REGISTERING c/*:projectResolver with deps List(c/*:projectDescriptors) and List(c/*:projectDescriptors)
+REGISTERING c/*:projectDescriptors with deps List(<anon-319c77de>) and List(<anon-319c77de>)
+REGISTERING c/*:projectDescriptors with deps List() and List()
+REGISTERING c/*:ivyConfiguration with deps List(streams-manager) and List()
+REGISTERING c/*:credentials with deps List(*/*:credentials, <anon-1f9009d3>) and List(<anon-1f9009d3>)
+REGISTERING c/*:credentials with deps List() and List()
+STARTING a/*:update
+STARTING a/*:updateCacheName
+STARTING a/*:transitiveUpdate
+REGISTERING c/*:moduleSettings with deps List(c/*:allDependencies) and List(c/*:allDependencies)
+STARTING a/*:update
+STARTING a/*:projectDependencies
+STARTING a/*:ivyConfiguration
+STARTING a/*:projectDescriptors
+REGISTERING c/*:allDependencies with deps List(c/*:projectDependencies) and List(c/*:projectDependencies)
+STARTING a/*:bootResolvers
+STARTING a/*:credentials
+STARTING a/*:ivySbt
+STARTING a/*:dependencyCacheDirectory
+REGISTERING c/*:projectDependencies with deps List(*/*:settingsData) and List()
+STARTING a/*:dependencyPositions
+STARTING a/compile:packageBin
+REGISTERING c/*:update::unresolvedWarningConfiguration with deps List(c/*:dependencyPositions) and List(c/*:dependencyPositions)
+STARTING b/compile:dependencyClasspath
+REGISTERING c/*:dependencyPositions with deps List(c/*:updateCacheName, <anon-776ae580>, state) and List(<anon-776ae580>, c/*:updateCacheName)
+STARTING b/compile:sources
+STARTING b/compile:scalacOptions
+REGISTERING c/*:dependencyPositions with deps List(streams-manager) and List()
+STARTING b/*:update
+REGISTERING c/*:update with deps List(<anon-6b0bcea5>, */*:settingsData) and List(<anon-6b0bcea5>)
+STARTING b/*:dependencyCacheDirectory
+REGISTERING c/*:update with deps List() and List()
+STARTING b/*:updateCacheName
+STARTING b/*:update
+STARTING b/*:transitiveUpdate
+REGISTERING a/compile:packageBin with deps List() and List()
+STARTING b/*:ivyConfiguration
+STARTING b/*:bootResolvers
+STARTING b/*:projectDescriptors
+STARTING b/*:ivySbt
+STARTING b/*:credentials
+STARTING b/*:projectDependencies
+STARTING b/*:dependencyPositions
+STARTING b/*:updateSbtClassifiers::ivyConfiguration
+STARTING b/*:scalaInstance
+STARTING b/compile:packageBin
+STARTING c/compile:packageBin
+STARTING c/compile:classpathConfiguration
+REGISTERING b/compile:packageBin with deps List(b/compile:packageBin::packageConfiguration, <anon-59dae020>) and List(<anon-59dae020>, b/compile:packageBin::packageConfiguration)
+STARTING c/compile:internalDependencyClasspath
+STARTING c/compile:dependencyClasspath
+REGISTERING b/compile:packageBin with deps List(streams-manager) and List()
+STARTING c/compile:externalDependencyClasspath
+STARTING c/compile:managedClasspath
+REGISTERING b/compile:packageBin::packageConfiguration with deps List(b/compile:packageBin::mappings, b/compile:packageBin::packageOptions) and List(b/compile:packageBin::packageOptions, b/compile:packageBin::mappings)
+STARTING c/compile:unmanagedClasspath
+REGISTERING b/compile:packageBin::packageOptions with deps List(b/compile:mainClass, */*:packageOptions) and List(*/*:packageOptions, b/compile:mainClass)
+REGISTERING */*:packageOptions with deps List() and List()
+REGISTERING b/compile:mainClass with deps List(<anon-21f8693e>, b/compile:discoveredMainClasses) and List(b/compile:discoveredMainClasses, <anon-21f8693e>)
+REGISTERING b/compile:discoveredMainClasses with deps List(b/compile:compile) and List(b/compile:compile)
+REGISTERING b/compile:mainClass with deps List(streams-manager) and List()
+REGISTERING b/compile:packageBin::mappings with deps List(b/compile:products) and List(b/compile:products)
+REGISTERING b/compile:products with deps List(b/compile:copyResources, b/compile:compile) and List(b/compile:compile, b/compile:copyResources)
+REGISTERING b/compile:copyResources with deps List(b/compile:resources, <anon-27959c4e>) and List(b/compile:resources, <anon-27959c4e>)
+REGISTERING b/compile:resources with deps List(b/compile:managedResources, b/compile:unmanagedResources) and List(b/compile:managedResources, b/compile:unmanagedResources)
+REGISTERING b/compile:managedResources with deps List(<anon-67aedd28>) and List(<anon-67aedd28>)
+STARTING c/compile:unmanagedClasspath
+STARTING c/compile:sources
+STARTING c/*:scalaInstance
+REGISTERING b/compile:managedResources with deps List(<anon-61b3de5b>) and List(<anon-61b3de5b>)
+STARTING c/*:updateSbtClassifiers::ivyConfiguration
+REGISTERING b/compile:managedResources with deps List(b/compile:discoveredSbtPlugins) and List(b/compile:discoveredSbtPlugins)
+REGISTERING b/compile:discoveredSbtPlugins with deps List(b/compile:compile) and List(b/compile:compile)
+REGISTERING b/compile:unmanagedResources with deps List() and List()
+REGISTERING b/compile:copyResources with deps List(streams-manager) and List()
+REGISTERING c/compile:packageBin with deps List(c/compile:packageBin::packageConfiguration, <anon-51a7ee4e>) and List(c/compile:packageBin::packageConfiguration, <anon-51a7ee4e>)
+REGISTERING c/compile:packageBin::packageConfiguration with deps List(c/compile:packageBin::mappings, c/compile:packageBin::packageOptions) and List(c/compile:packageBin::packageOptions, c/compile:packageBin::mappings)
+REGISTERING c/compile:packageBin::packageOptions with deps List(c/compile:mainClass, */*:packageOptions) and List(*/*:packageOptions, c/compile:mainClass)
+STARTING c/compile:scalacOptions
+STARTING c/*:update
+REGISTERING c/compile:mainClass with deps List(<anon-51f714d1>, c/compile:discoveredMainClasses) and List(<anon-51f714d1>, c/compile:discoveredMainClasses)
+REGISTERING c/compile:mainClass with deps List(streams-manager) and List()
+REGISTERING c/compile:discoveredMainClasses with deps List(c/compile:compile) and List(c/compile:compile)
+REGISTERING c/compile:packageBin::mappings with deps List(c/compile:products) and List(c/compile:products)
+STARTING c/*:updateCacheName
+REGISTERING c/compile:products with deps List(c/compile:copyResources, c/compile:compile) and List(c/compile:copyResources, c/compile:compile)
+REGISTERING c/compile:copyResources with deps List(c/compile:resources, <anon-260d878a>) and List(c/compile:resources, <anon-260d878a>)
+REGISTERING c/compile:resources with deps List(c/compile:managedResources, c/compile:unmanagedResources) and List(c/compile:unmanagedResources, c/compile:managedResources)
+STARTING c/*:dependencyCacheDirectory
+REGISTERING c/compile:unmanagedResources with deps List() and List()
+STARTING c/*:transitiveUpdate
+REGISTERING c/compile:managedResources with deps List(<anon-7aafac17>) and List(<anon-7aafac17>)
+REGISTERING c/compile:managedResources with deps List(<anon-6b8cfbeb>) and List(<anon-6b8cfbeb>)
+STARTING c/*:ivySbt
+REGISTERING c/compile:managedResources with deps List(c/compile:discoveredSbtPlugins) and List(c/compile:discoveredSbtPlugins)
+REGISTERING c/compile:discoveredSbtPlugins with deps List(c/compile:compile) and List(c/compile:compile)
+STARTING c/*:bootResolvers
+REGISTERING c/compile:copyResources with deps List(streams-manager) and List()
+REGISTERING c/compile:packageBin with deps List(streams-manager) and List()
+STARTING c/*:projectDescriptors
+STARTING c/*:ivyConfiguration
+STARTING c/*:credentials
+STARTING c/*:projectDependencies
+STARTING c/*:dependencyPositions
+REGISTERING c/compile:unmanagedClasspath with deps List(<anon-5ffae42f>) and List(<anon-5ffae42f>)
+STARTING c/*:update
+REGISTERING c/compile:unmanagedClasspath with deps List(c/compile:unmanagedJars, b/compile:unmanagedJars, a/compile:unmanagedJars) and List()
+STARTING a/compile:dependencyClasspath
+STARTING a/*:bootIvyConfiguration
+STARTING a/*:transitiveUpdate
+STARTING a/*:update
+STARTING a/*:allDependencies
+STARTING a/*:projectDescriptors
+STARTING a/*:credentials
+STARTING a/*:dependencyPositions
+REGISTERING a/*:transitiveUpdate with deps List(*/*:compilers) and List()
+REGISTERING a/*:update with deps List() and List()
+REGISTERING a/*:projectDescriptors with deps List(<anon-5d52a17b>) and List(<anon-5d52a17b>)
+REGISTERING a/*:projectDescriptors with deps List(<anon-4528a871>, */*:settingsData) and List(<anon-4528a871>)
+REGISTERING a/*:projectDescriptors with deps List() and List()
+STARTING a/compile:packageBin
+STARTING b/compile:dependencyClasspath
+STARTING b/*:update
+STARTING b/*:transitiveUpdate
+STARTING b/*:projectDescriptors
+STARTING b/*:credentials
+STARTING b/*:allDependencies
+STARTING b/*:dependencyPositions
+STARTING b/*:bootIvyConfiguration
+STARTING b/compile:packageBin
+STARTING */*:packageOptions
+STARTING b/compile:mainClass
+STARTING b/compile:unmanagedResources
+STARTING b/compile:copyResources
+STARTING c/compile:mainClass
+REGISTERING b/*:update with deps List() and List()
+REGISTERING b/*:transitiveUpdate with deps List(*/*:compilers) and List()
+REGISTERING b/*:projectDescriptors with deps List(<anon-613bebb9>) and List(<anon-613bebb9>)
+REGISTERING b/*:projectDescriptors with deps List(<anon-2625eb84>, */*:settingsData) and List(<anon-2625eb84>)
+REGISTERING b/*:projectDescriptors with deps List() and List()
+STARTING c/compile:unmanagedResources
+STARTING c/compile:copyResources
+STARTING c/compile:packageBin
+STARTING c/compile:unmanagedClasspath
+STARTING c/*:bootIvyConfiguration
+STARTING c/*:transitiveUpdate
+STARTING c/*:projectDescriptors
+STARTING c/*:credentials
+STARTING c/*:allDependencies
+STARTING c/*:update
+STARTING c/*:dependencyPositions
+STARTING a/compile:dependencyClasspath
+STARTING */*:compilers
+STARTING a/*:transitiveUpdate
+REGISTERING c/*:transitiveUpdate with deps List(*/*:compilers) and List()
+REGISTERING c/*:projectDescriptors with deps List(<anon-6a73b74c>) and List(<anon-6a73b74c>)
+REGISTERING c/*:projectDescriptors with deps List(<anon-4c58212>, */*:settingsData) and List(<anon-4c58212>)
+REGISTERING c/*:projectDescriptors with deps List() and List()
+REGISTERING c/*:update with deps List() and List()
+STARTING a/*:update
+STARTING a/*:moduleSettings
+STARTING a/*:projectDescriptors
+STARTING a/*:update::unresolvedWarningConfiguration
+STARTING a/compile:packageBin
+STARTING b/compile:dependencyClasspath
+STARTING b/*:update
+STARTING b/*:transitiveUpdate
+STARTING b/*:projectDescriptors
+STARTING b/*:moduleSettings
+STARTING b/*:update::unresolvedWarningConfiguration
+STARTING */*:compilers
+STARTING c/compile:unmanagedClasspath
+STARTING */*:compilers
+STARTING c/*:transitiveUpdate
+STARTING c/*:projectDescriptors
+STARTING c/*:moduleSettings
+STARTING c/*:update
+STARTING c/*:update::unresolvedWarningConfiguration
+STARTING a/compile:incCompileSetup
+STARTING a/*:transitiveUpdate
+STARTING a/*:projectDescriptors
+STARTING a/compile:exportedProducts
+STARTING b/compile:incCompileSetup
+REGISTERING a/*:projectDescriptors with deps List(<anon-4f94b2a8>) and List(<anon-4f94b2a8>)
+STARTING b/*:transitiveUpdate
+STARTING b/*:projectDescriptors
+REGISTERING a/*:projectDescriptors with deps List(streams-manager) and List()
+STARTING c/compile:unmanagedClasspath
+STARTING c/*:transitiveUpdate
+STARTING c/*:projectDescriptors
+STARTING a/compile:readAnalysis
+REGISTERING b/*:projectDescriptors with deps List(<anon-456c6754>) and List(<anon-456c6754>)
+STARTING a/*:projectDescriptors
+REGISTERING b/*:projectDescriptors with deps List(streams-manager) and List()
+REGISTERING c/*:projectDescriptors with deps List(<anon-7432cb37>) and List(<anon-7432cb37>)
+REGISTERING c/*:projectDescriptors with deps List(streams-manager) and List()
+STARTING b/compile:readAnalysis
+STARTING b/*:projectDescriptors
+STARTING c/*:projectDescriptors
+STARTING a/*:projectDescriptors
+STARTING b/*:projectDescriptors
+STARTING c/*:projectDescriptors
+STARTING a/*:projectDescriptors
+STARTING b/*:projectDescriptors
+STARTING c/*:projectDescriptors
+STARTING a/*:projectResolver
+STARTING b/*:projectResolver
+STARTING c/*:projectResolver
+STARTING a/*:fullResolvers
+STARTING b/*:fullResolvers
+STARTING c/*:fullResolvers
+STARTING a/*:ivyConfiguration
+STARTING b/*:ivyConfiguration
+STARTING c/*:ivyConfiguration
+STARTING a/*:ivySbt
+STARTING b/*:ivySbt
+STARTING c/*:ivySbt
+STARTING a/*:ivyModule
+STARTING b/*:ivyModule
+STARTING c/*:ivyModule
+STARTING a/*:update
+STARTING b/*:update
+STARTING c/*:update
+STARTING a/*:update
+STARTING b/*:update
+STARTING c/*:update
+STARTING a/compile:scalacOptions
+STARTING b/compile:scalacOptions
+STARTING c/compile:scalacOptions
+STARTING c/compile:classpathConfiguration
+STARTING a/compile:compile::compileInputs
+STARTING b/compile:compile::compileInputs
+STARTING c/compile:internalDependencyClasspath
+STARTING c/compile:managedClasspath
+REGISTERING c/compile:internalDependencyClasspath with deps List(<anon-79d538c1>) and List(<anon-79d538c1>)
+REGISTERING c/compile:internalDependencyClasspath with deps List(<anon-69eb88a7>, <anon-2db15764>, b/compile:exportedProducts, a/compile:exportedProducts) and List(<anon-2db15764>, <anon-69eb88a7>, a/compile:exportedProducts, b/compile:exportedProducts)
+REGISTERING c/compile:internalDependencyClasspath with deps List() and List()
+STARTING a/compile:compileIncremental
+REGISTERING c/compile:internalDependencyClasspath with deps List() and List()
+STARTING b/compile:compileIncremental
+STARTING c/compile:internalDependencyClasspath
+STARTING c/compile:internalDependencyClasspath
+STARTING c/compile:managedClasspath
+STARTING a/compile:manipulateBytecode
+STARTING b/compile:manipulateBytecode
+STARTING c/compile:externalDependencyClasspath
+STARTING a/compile:compile
+STARTING b/compile:compile
+STARTING c/compile:externalDependencyClasspath
+STARTING a/compile:compile
+STARTING b/compile:compile
+REGISTERING a/compile:discoveredMainClasses with deps List(a/compile:compile) and List()
+STARTING a/compile:exportedProducts
+STARTING a/compile:discoveredMainClasses
+STARTING b/compile:discoveredMainClasses
+STARTING b/compile:discoveredSbtPlugins
+STARTING a/compile:exportedProducts
+STARTING b/compile:mainClass
+[warn] Multiple main classes detected.  Run 'show discoveredMainClasses' to see the list
+STARTING b/compile:managedResources
+STARTING b/compile:packageBin::packageOptions
+STARTING b/compile:managedResources
+STARTING b/compile:managedResources
+STARTING b/compile:resources
+STARTING b/compile:copyResources
+STARTING b/compile:products
+STARTING b/compile:packageBin::mappings
+STARTING b/compile:packageBin::packageConfiguration
+STARTING b/compile:packageBin
+[info] Packaging /home/fommil/Projects/sbt-big-project/src/sbt-test/sbt-big-project/simple/b/target/scala-2.10/b_2.10-v1.jar ...
+[info] Done packaging.
+STARTING b/compile:packageBin
+STARTING b/compile:exportedProducts
+STARTING b/compile:exportedProducts
+STARTING b/compile:exportedProducts
+STARTING c/compile:internalDependencyClasspath
+STARTING c/compile:internalDependencyClasspath
+STARTING c/compile:internalDependencyClasspath
+STARTING c/compile:dependencyClasspath
+STARTING c/compile:dependencyClasspath
+STARTING c/compile:incCompileSetup
+STARTING c/compile:compile::compileInputs
+STARTING c/compile:readAnalysis
+STARTING c/compile:compileIncremental
+STARTING c/compile:manipulateBytecode
+STARTING c/compile:compile
+STARTING c/compile:compile
+STARTING c/compile:discoveredMainClasses
+STARTING c/compile:discoveredSbtPlugins
+STARTING c/compile:mainClass
+[warn] Multiple main classes detected.  Run 'show discoveredMainClasses' to see the list
+STARTING c/compile:managedResources
+STARTING c/compile:packageBin::packageOptions
+STARTING c/compile:managedResources
+STARTING c/compile:managedResources
+STARTING c/compile:resources
+STARTING c/compile:copyResources
+STARTING c/compile:products
+STARTING c/compile:packageBin::mappings
+STARTING c/compile:packageBin::packageConfiguration
+STARTING c/compile:packageBin
+[info] Packaging /home/fommil/Projects/sbt-big-project/src/sbt-test/sbt-big-project/simple/c/target/scala-2.10/c_2.10-v1.jar ...
+[info] Done packaging.
+STARTING c/compile:packageBin
+STARTING c/compile:exportedProducts
+STARTING c/compile:exportedProducts
+STARTING c/compile:exportedProducts
+STARTING d/compile:internalDependencyClasspath
+STARTING d/compile:internalDependencyClasspath
+STARTING d/compile:internalDependencyClasspath
+STARTING d/compile:dependencyClasspath
+STARTING d/compile:dependencyClasspath
+STARTING d/compile:incCompileSetup
+STARTING d/compile:readAnalysis
 STARTING d/compile:compile::compileInputs
 STARTING d/compile:compileIncremental
 STARTING d/compile:manipulateBytecode
 STARTING d/compile:compile
-REGISTERING d/compile:discoveredMainClasses
-STARTING <anon-2f9236d8>
+STARTING d/compile:compile
+STARTING <anon-8e0b048>
+REGISTERING d/compile:discoveredMainClasses with deps List(d/compile:compile) and List()
 STARTING d/compile:discoveredMainClasses
-STARTING <anon-2f9236d8>
-Total time: 81.094914 ms
+STARTING <anon-8e0b048>
+Total time: 161.267269 ms
 Task times:
-  d/compile:compile::compileInputs: 5.142206 ms
-  d/*:update: 3.8842429999999997 ms
-  d/compile:compileIncremental: 2.289417 ms
-  d/*:dependencyPositions: 0.739521 ms
-  d/compile:unmanagedSources: 0.723588 ms
-  d/*:transitiveUpdate: 0.69172 ms
-  d/*:projectDescriptors: 0.501949 ms
-  d/*:updateSbtClassifiers::ivyConfiguration: 0.49578 ms
-  d/compile:dependencyClasspath: 0.48519999999999996 ms
-  d/compile:scalacOptions: 0.45839199999999997 ms
-  d/compile:discoveredMainClasses: 0.366593 ms
-  d/*:ivyConfiguration: 0.313353 ms
-  */*:compilers: 0.262411 ms
-  d/*:ivySbt: 0.23005899999999999 ms
-  d/*:projectDependencies: 0.17183299999999999 ms
-  d/compile:compile: 0.17141099999999998 ms
-  d/*:scalaInstance: 0.14546399999999998 ms
-  d/*:dependencyCacheDirectory: 0.13871 ms
-  d/*:bootResolvers: 0.111916 ms
-  d/compile:incCompileSetup: 0.11112799999999999 ms
-  d/compile:update: 0.100646 ms
-  d/*:ivyModule: 0.059753999999999995 ms
-  d/*:credentials: 0.034533999999999995 ms
-  d/*:updateSbtClassifiers::externalResolvers: 0.029948 ms
-  d/*:allDependencies: 0.029529 ms
-  d/*:externalResolvers: 0.028124 ms
-  d/*:incOptions: 0.02692 ms
-  d/*:fullResolvers: 0.024694999999999998 ms
-  d/compile:compileAnalysisFilename: 0.024236 ms
-  d/compile:sources: 0.023778999999999998 ms
-  d/*:updateCacheName: 0.021438 ms
-  d/compile:readAnalysis: 0.020196 ms
-  d/compile:managedSources: 0.019024 ms
-  <anon-2f9236d8>: 0.018775 ms
-  d/*:moduleSettings: 0.016967 ms
-  */*:buildStructure: 0.011833999999999999 ms
-  */*:compilerCache: 0.008832999999999999 ms
-  d/*:projectResolver: 0.008799 ms
-  */*:javacOptions: 0.008076 ms
-  execution-roots: 0.006986 ms
-  d/*:update::unresolvedWarningConfiguration: 0.0068249999999999995 ms
-  d/*:bootIvyConfiguration: 0.006702 ms
-  d/compile:manipulateBytecode: 0.006463 ms
-  */*:definesClass: 0.005821 ms
-  */*:incOptions: 0.005716 ms
-  */*:skip: 0.005379 ms
-  */*:settingsData: 0.005326 ms
-  state: 0.004849 ms
-  */*:scalacOptions: 0.0047989999999999994 ms
-  d/compile:compile::compilerReporter: 0.004474 ms
-  */*:credentials: 0.004458999999999999 ms
-  */*:sourcePositionMappers: 0.004114 ms
-  streams-manager: 0.004051 ms
+  d/*:update: 5.070427 ms
+  c/*:update: 3.2211779999999997 ms
+  b/*:update: 3.104163 ms
+  a/*:update: 2.8575079999999997 ms
+  b/compile:packageBin: 2.411701 ms
+  c/compile:packageBin: 2.162921 ms
+  d/compile:compileIncremental: 1.9717129999999998 ms
+  b/compile:compileIncremental: 1.9341119999999998 ms
+  c/compile:compileIncremental: 1.82287 ms
+  a/compile:compileIncremental: 1.789057 ms
+  */*:compilers: 1.316979 ms
+  d/compile:unmanagedClasspath: 1.0778969999999999 ms
+  b/compile:copyResources: 1.008697 ms
+  d/*:dependencyPositions: 0.941282 ms
+  d/compile:internalDependencyClasspath: 0.940454 ms
+  d/compile:unmanagedSources: 0.883745 ms
+  d/*:projectDescriptors: 0.8778509999999999 ms
+  c/compile:copyResources: 0.8447319999999999 ms
+  d/compile:dependencyClasspath: 0.8164239999999999 ms
+  a/*:dependencyPositions: 0.696349 ms
+  c/compile:unmanagedClasspath: 0.687311 ms
+  d/compile:managedClasspath: 0.67909 ms
+  a/compile:readAnalysis: 0.65487 ms
+  a/compile:unmanagedSources: 0.639411 ms
+  d/*:transitiveUpdate: 0.6310169999999999 ms
+  c/*:dependencyPositions: 0.619091 ms
+  c/compile:dependencyClasspath: 0.616263 ms
+  d/*:updateSbtClassifiers::ivyConfiguration: 0.615313 ms
+  c/compile:internalDependencyClasspath: 0.613224 ms
+  a/*:projectDescriptors: 0.6024309999999999 ms
+  a/compile:dependencyClasspath: 0.602185 ms
+  b/compile:unmanagedJars: 0.575628 ms
+  b/compile:dependencyClasspath: 0.5734 ms
+  d/compile:scalacOptions: 0.551294 ms
+  b/*:dependencyPositions: 0.550634 ms
+  c/compile:unmanagedSources: 0.49526299999999995 ms
+  b/*:projectDescriptors: 0.459176 ms
+  b/compile:unmanagedSources: 0.45714 ms
+  c/compile:managedClasspath: 0.435006 ms
+  a/compile:unmanagedJars: 0.431924 ms
+  c/compile:mainClass: 0.42763599999999996 ms
+  c/*:projectDescriptors: 0.41331799999999996 ms
+  c/compile:unmanagedJars: 0.40219699999999997 ms
+  a/*:transitiveUpdate: 0.396318 ms
+  b/compile:scalacOptions: 0.394316 ms
+  d/compile:unmanagedJars: 0.38986099999999996 ms
+  b/*:transitiveUpdate: 0.383092 ms
+  c/*:transitiveUpdate: 0.36971899999999996 ms
+  a/compile:scalacOptions: 0.364981 ms
+  c/compile:scalacOptions: 0.35675799999999996 ms
+  b/compile:mainClass: 0.35494699999999996 ms
+  a/*:updateSbtClassifiers::ivyConfiguration: 0.349937 ms
+  d/*:ivyConfiguration: 0.34651499999999996 ms
+  d/compile:externalDependencyClasspath: 0.336974 ms
+  b/compile:packageBin::mappings: 0.336574 ms
+  b/*:ivyConfiguration: 0.320001 ms
+  c/*:updateSbtClassifiers::ivyConfiguration: 0.31893099999999996 ms
+  a/compile:exportedProducts: 0.31629999999999997 ms
+  b/*:updateSbtClassifiers::ivyConfiguration: 0.314743 ms
+  c/compile:exportedProducts: 0.314168 ms
+  b/compile:exportedProducts: 0.30657 ms
+  a/*:ivyConfiguration: 0.300326 ms
+  c/compile:discoveredMainClasses: 0.29594 ms
+  a/compile:compile::compileInputs: 0.29423499999999997 ms
+  d/compile:discoveredMainClasses: 0.282138 ms
+  b/compile:discoveredMainClasses: 0.280748 ms
+  d/*:ivySbt: 0.278277 ms
+  a/compile:discoveredMainClasses: 0.275431 ms
+  d/compile:compile::compileInputs: 0.266536 ms
+  c/compile:packageBin::mappings: 0.257878 ms
+  a/*:ivySbt: 0.23524699999999998 ms
+  c/*:ivyConfiguration: 0.22819899999999999 ms
+  a/*:scalaInstance: 0.223604 ms
+  b/compile:compile::compileInputs: 0.22161 ms
+  b/*:ivySbt: 0.219743 ms
+  c/compile:externalDependencyClasspath: 0.211164 ms
+  c/compile:compile::compileInputs: 0.20801499999999998 ms
+  c/*:ivySbt: 0.197994 ms
+  d/*:scalaInstance: 0.19772699999999999 ms
+  d/compile:compile: 0.19314199999999998 ms
+  a/compile:compile: 0.177748 ms
+  b/compile:unmanagedResources: 0.164653 ms
+  d/compile:readAnalysis: 0.148699 ms
+  b/*:scalaInstance: 0.142943 ms
+  c/compile:readAnalysis: 0.137287 ms
+  d/*:dependencyCacheDirectory: 0.131684 ms
+  c/compile:compile: 0.130044 ms
+  d/compile:incCompileSetup: 0.128522 ms
+  a/compile:packageBin: 0.126693 ms
+  d/*:bootResolvers: 0.125608 ms
+  a/compile:incCompileSetup: 0.123401 ms
+  a/*:bootResolvers: 0.117934 ms
+  c/*:dependencyCacheDirectory: 0.116671 ms
+  c/compile:unmanagedResources: 0.10935399999999999 ms
+  c/*:scalaInstance: 0.101842 ms
+  a/*:dependencyCacheDirectory: 0.101418 ms
+  d/compile:update: 0.098885 ms
+  c/compile:incCompileSetup: 0.09676799999999999 ms
+  b/*:bootResolvers: 0.095165 ms
+  c/*:bootResolvers: 0.093597 ms
+  a/compile:manipulateBytecode: 0.09025 ms
+  b/compile:compile: 0.086935 ms
+  a/compile:update: 0.084995 ms
+  b/*:dependencyCacheDirectory: 0.083994 ms
+  c/compile:update: 0.083005 ms
+  b/compile:incCompileSetup: 0.081948 ms
+  b/compile:managedResources: 0.080069 ms
+  d/compile:classpathConfiguration: 0.075861 ms
+  c/compile:managedResources: 0.075234 ms
+  d/*:ivyModule: 0.067003 ms
+  c/compile:classpathConfiguration: 0.063059 ms
+  b/compile:update: 0.061626999999999994 ms
+  d/*:projectDependencies: 0.060899999999999996 ms
+  b/*:projectDependencies: 0.056678 ms
+  a/*:ivyModule: 0.056596999999999995 ms
+  c/*:projectDependencies: 0.053217999999999994 ms
+  b/*:ivyModule: 0.043081999999999995 ms
+  d/*:credentials: 0.039305 ms
+  d/compile:compileAnalysisFilename: 0.039257 ms
+  d/*:allDependencies: 0.039073 ms
+  c/*:updateCacheName: 0.038637 ms
+  c/*:ivyModule: 0.037715 ms
+  d/*:incOptions: 0.033735 ms
+  b/compile:packageBin::packageOptions: 0.033599 ms
+  c/compile:packageBin::packageOptions: 0.031476 ms
+  d/*:externalResolvers: 0.030580999999999997 ms
+  c/*:allDependencies: 0.028798999999999998 ms
+  b/*:allDependencies: 0.028651 ms
+  a/*:externalResolvers: 0.027798 ms
+  a/*:allDependencies: 0.027188999999999998 ms
+  a/compile:sources: 0.026379 ms
+  a/*:fullResolvers: 0.026286999999999998 ms
+  c/*:externalResolvers: 0.024654 ms
+  b/compile:readAnalysis: 0.024302999999999998 ms
+  a/*:incOptions: 0.02387 ms
+  d/compile:managedSources: 0.023639999999999998 ms
+  d/compile:sources: 0.023274 ms
+  d/*:updateCacheName: 0.023198 ms
+  b/*:incOptions: 0.023032 ms
+  d/*:fullResolvers: 0.022803 ms
+  a/compile:compileAnalysisFilename: 0.022157 ms
+  b/*:externalResolvers: 0.021491 ms
+  a/*:projectDependencies: 0.021467999999999998 ms
+  d/*:updateSbtClassifiers::externalResolvers: 0.020517 ms
+  a/compile:managedSources: 0.020225 ms
+  b/compile:discoveredSbtPlugins: 0.020149 ms
+  d/*:moduleSettings: 0.019961 ms
+  a/*:updateCacheName: 0.018982 ms
+  b/*:credentials: 0.018179999999999998 ms
+  c/compile:discoveredSbtPlugins: 0.018168999999999998 ms
+  a/*:credentials: 0.018109 ms
+  c/*:moduleSettings: 0.017988999999999998 ms
+  c/*:incOptions: 0.017838 ms
+  b/compile:compileAnalysisFilename: 0.017425 ms
+  b/compile:sources: 0.017221999999999998 ms
+  c/*:credentials: 0.016843999999999998 ms
+  c/compile:sources: 0.016796 ms
+  b/*:fullResolvers: 0.016729 ms
+  c/compile:compileAnalysisFilename: 0.016703 ms
+  */*:compilerCache: 0.01655 ms
+  a/*:updateSbtClassifiers::externalResolvers: 0.016321 ms
+  c/compile:managedSources: 0.015623999999999999 ms
+  a/*:moduleSettings: 0.015392 ms
+  <anon-8e0b048>: 0.015335999999999999 ms
+  b/*:updateCacheName: 0.01474 ms
+  b/*:moduleSettings: 0.014551999999999999 ms
+  b/compile:managedSources: 0.014518 ms
+  b/*:updateSbtClassifiers::externalResolvers: 0.013961 ms
+  c/*:updateSbtClassifiers::externalResolvers: 0.013812 ms
+  c/compile:resources: 0.013333 ms
+  c/*:fullResolvers: 0.013316999999999999 ms
+  */*:buildStructure: 0.012221 ms
+  b/compile:resources: 0.011933 ms
+  b/compile:products: 0.01128 ms
+  */*:sourcePositionMappers: 0.010846999999999999 ms
+  b/compile:packageBin::packageConfiguration: 0.009913 ms
+  */*:incOptions: 0.009837 ms
+  c/compile:products: 0.009252 ms
+  c/compile:packageBin::packageConfiguration: 0.009235 ms
+  */*:definesClass: 0.008688 ms
+  d/*:projectResolver: 0.008605 ms
+  state: 0.008506 ms
+  d/*:bootIvyConfiguration: 0.008442999999999999 ms
+  */*:skip: 0.008094 ms
+  */*:scalacOptions: 0.008069 ms
+  d/*:update::unresolvedWarningConfiguration: 0.007833999999999999 ms
+  */*:settingsData: 0.007127 ms
+  */*:credentials: 0.006977 ms
+  a/*:projectResolver: 0.006646 ms
+  d/compile:compile::compilerReporter: 0.006581 ms
+  streams-manager: 0.00649 ms
+  a/compile:compile::compilerReporter: 0.006475 ms
+  b/*:bootIvyConfiguration: 0.006473 ms
+  */*:javacOptions: 0.006409 ms
+  execution-roots: 0.006107 ms
+  a/*:bootIvyConfiguration: 0.006063 ms
+  b/*:projectResolver: 0.005915 ms
+  d/compile:manipulateBytecode: 0.005621999999999999 ms
+  c/*:update::unresolvedWarningConfiguration: 0.005607 ms
+  c/compile:manipulateBytecode: 0.0054989999999999995 ms
+  */*:packageOptions: 0.005395 ms
+  a/*:update::unresolvedWarningConfiguration: 0.005101 ms
+  c/*:projectResolver: 0.004809 ms
+  c/*:bootIvyConfiguration: 0.004519 ms
+  c/compile:compile::compilerReporter: 0.00447 ms
+  b/compile:compile::compilerReporter: 0.004275999999999999 ms
+  b/*:update::unresolvedWarningConfiguration: 0.004190999999999999 ms
+  b/compile:manipulateBytecode: 0.004073 ms
 Graph times:
-  <anon-2f9236d8>: 160.375281 ms
-  d/compile:compile: 121.91874899999999 ms
-  d/compile:scalacOptions: 57.590049 ms
-  d/compile:dependencyClasspath: 50.657295999999995 ms
-  d/*:update: 48.817800999999996 ms
-  d/compile:compileIncremental: 40.847812999999995 ms
-  d/compile:compile::compileInputs: 38.715422 ms
-  d/compile:manipulateBytecode: 34.295719999999996 ms
-  */*:compilers: 27.964671 ms
-  d/compile:incCompileSetup: 25.965217 ms
-  d/compile:readAnalysis: 21.307474 ms
-  d/*:updateSbtClassifiers::ivyConfiguration: 20.549951 ms
-  d/*:scalaInstance: 19.868312 ms
-  d/*:projectDescriptors: 19.485215 ms
-  d/*:bootIvyConfiguration: 19.130851 ms
-  d/*:transitiveUpdate: 18.449216 ms
-  d/*:ivyModule: 15.898321 ms
-  d/*:ivySbt: 13.106788 ms
-  d/*:ivyConfiguration: 12.495021 ms
-  d/compile:sources: 12.009238999999999 ms
-  d/*:fullResolvers: 11.952191 ms
-  d/*:projectResolver: 11.760634 ms
-  d/compile:unmanagedSources: 11.698065999999999 ms
-  */*:settingsData: 11.561387999999999 ms
-  d/compile:update: 11.466267 ms
-  d/compile:managedSources: 11.101606 ms
-  d/*:moduleSettings: 10.631924999999999 ms
-  d/*:updateSbtClassifiers::externalResolvers: 10.584511 ms
-  d/*:allDependencies: 10.214758 ms
-  d/*:incOptions: 9.047227 ms
-  d/*:projectDependencies: 8.652735 ms
-  d/*:update::unresolvedWarningConfiguration: 8.19509 ms
-  d/*:dependencyPositions: 3.7494769999999997 ms
-  d/*:credentials: 3.0077179999999997 ms
-  */*:buildStructure: 2.88346 ms
-  */*:compilerCache: 2.6228879999999997 ms
-  state: 1.4878149999999999 ms
-  d/compile:compile::compilerReporter: 1.4866789999999999 ms
-  streams-manager: 1.385505 ms
-  */*:incOptions: 1.344531 ms
-  */*:scalacOptions: 1.246103 ms
-  */*:javacOptions: 1.220175 ms
-  */*:sourcePositionMappers: 1.052621 ms
-  d/*:externalResolvers: 1.04902 ms
-  d/compile:discoveredMainClasses: 0.9808439999999999 ms
-  d/compile:compileAnalysisFilename: 0.634983 ms
-  execution-roots: 0.5255409999999999 ms
-  d/*:dependencyCacheDirectory: 0.479591 ms
-  */*:definesClass: 0.470871 ms
-  d/*:updateCacheName: 0.364454 ms
-  */*:skip: 0.314415 ms
-  */*:credentials: 0.278596 ms
-  d/*:bootResolvers: 0.24692899999999998 ms
+  d/compile:internalDependencyClasspath: 391.14045699999997 ms
+  c/compile:exportedProducts: 322.429215 ms
+  <anon-8e0b048>: 321.460941 ms
+  d/compile:compile: 319.507899 ms
+  d/compile:dependencyClasspath: 309.753137 ms
+  b/compile:exportedProducts: 290.08631399999996 ms
+  a/compile:exportedProducts: 232.655219 ms
+  c/compile:packageBin: 187.768316 ms
+  c/compile:compile: 183.846014 ms
+  b/compile:packageBin: 169.36013499999999 ms
+  c/compile:managedResources: 169.02323099999998 ms
+  c/compile:internalDependencyClasspath: 163.91034 ms
+  d/compile:compileIncremental: 163.637599 ms
+  d/compile:incCompileSetup: 163.434123 ms
+  a/compile:compile: 162.19840399999998 ms
+  c/compile:dependencyClasspath: 161.865559 ms
+  d/compile:compile::compileInputs: 161.33577499999998 ms
+  b/compile:compile: 158.459547 ms
+  d/compile:manipulateBytecode: 157.271078 ms
+  d/compile:readAnalysis: 154.74742799999999 ms
+  */*:compilers: 152.530439 ms
+  b/compile:managedResources: 143.491222 ms
+  a/*:update: 134.920807 ms
+  c/*:update: 127.82473999999999 ms
+  b/*:update: 124.87002199999999 ms
+  c/compile:externalDependencyClasspath: 119.72338099999999 ms
+  c/compile:managedClasspath: 110.97918 ms
+  d/compile:externalDependencyClasspath: 103.37777899999999 ms
+  a/compile:packageBin: 90.098733 ms
+  c/compile:scalacOptions: 85.82822399999999 ms
+  b/compile:scalacOptions: 83.852882 ms
+  a/compile:scalacOptions: 83.232107 ms
+  c/compile:compileIncremental: 83.116559 ms
+  d/*:update: 83.08162 ms
+  c/compile:compile::compileInputs: 80.59343899999999 ms
+  c/compile:incCompileSetup: 79.983514 ms
+  c/compile:manipulateBytecode: 79.31434399999999 ms
+  d/compile:managedClasspath: 78.789653 ms
+  c/compile:readAnalysis: 75.787155 ms
+  a/compile:dependencyClasspath: 75.151657 ms
+  b/compile:dependencyClasspath: 74.54915799999999 ms
+  d/compile:scalacOptions: 74.49582099999999 ms
+  a/compile:manipulateBytecode: 73.13445399999999 ms
+  b/compile:manipulateBytecode: 71.430645 ms
+  b/compile:compileIncremental: 70.62298 ms
+  a/compile:compileIncremental: 69.36563199999999 ms
+  a/compile:compile::compileInputs: 67.732539 ms
+  b/compile:compile::compileInputs: 65.389736 ms
+  a/*:projectDescriptors: 64.87794 ms
+  c/compile:copyResources: 63.898415 ms
+  a/*:transitiveUpdate: 62.672332 ms
+  c/compile:mainClass: 62.493643 ms
+  c/compile:packageBin::packageConfiguration: 60.482056 ms
+  c/compile:packageBin::mappings: 58.734294999999996 ms
+  c/compile:products: 58.236534999999996 ms
+  c/compile:unmanagedClasspath: 57.736033 ms
+  c/compile:packageBin::packageOptions: 57.386835999999995 ms
+  c/*:projectDescriptors: 57.292628 ms
+  c/compile:resources: 57.162786 ms
+  b/*:projectDescriptors: 56.965896 ms
+  b/compile:copyResources: 56.20878 ms
+  c/compile:classpathConfiguration: 55.810385999999994 ms
+  c/*:transitiveUpdate: 55.761098999999994 ms
+  b/compile:mainClass: 55.192279 ms
+  c/compile:discoveredSbtPlugins: 55.032500999999996 ms
+  c/compile:discoveredMainClasses: 54.273087 ms
+  b/*:transitiveUpdate: 54.243347 ms
+  b/compile:packageBin::packageConfiguration: 50.494004 ms
+  b/compile:packageBin::mappings: 50.154081 ms
+  b/compile:products: 49.719224999999994 ms
+  b/compile:packageBin::packageOptions: 48.424746 ms
+  b/compile:resources: 48.412461 ms
+  b/compile:discoveredMainClasses: 47.158246 ms
+  b/compile:readAnalysis: 46.867450999999996 ms
+  b/compile:discoveredSbtPlugins: 46.528456999999996 ms
+  c/*:ivySbt: 45.776888 ms
+  a/*:ivySbt: 45.239442 ms
+  b/*:ivySbt: 45.006778 ms
+  c/*:ivyConfiguration: 44.7143 ms
+  a/compile:incCompileSetup: 44.19087 ms
+  a/*:ivyConfiguration: 43.785785 ms
+  b/compile:incCompileSetup: 43.540746999999996 ms
+  d/compile:unmanagedClasspath: 42.523364 ms
+  a/compile:readAnalysis: 42.453621 ms
+  b/*:ivyConfiguration: 42.045441 ms
+  d/*:projectDescriptors: 40.430589999999995 ms
+  a/*:ivyModule: 40.423978 ms
+  b/*:ivyModule: 37.943295 ms
+  a/*:fullResolvers: 36.199269 ms
+  a/*:projectResolver: 35.832977 ms
+  c/*:ivyModule: 34.717272 ms
+  b/*:fullResolvers: 34.438196 ms
+  b/*:projectResolver: 34.117898 ms
+  c/*:bootIvyConfiguration: 31.553634 ms
+  b/*:bootIvyConfiguration: 31.442656 ms
+  a/*:bootIvyConfiguration: 31.301619 ms
+  c/*:fullResolvers: 31.233817 ms
+  c/*:projectResolver: 30.878989999999998 ms
+  d/*:transitiveUpdate: 30.575967 ms
+  d/compile:classpathConfiguration: 30.500034999999997 ms
+  b/compile:unmanagedJars: 30.438159 ms
+  d/compile:unmanagedJars: 29.022022 ms
+  c/*:credentials: 28.791432 ms
+  a/compile:unmanagedJars: 27.794103999999997 ms
+  c/*:dependencyPositions: 27.076919 ms
+  c/*:updateSbtClassifiers::ivyConfiguration: 26.629678 ms
+  c/compile:unmanagedJars: 26.362181999999997 ms
+  a/*:moduleSettings: 25.957760999999998 ms
+  b/*:credentials: 24.855559 ms
+  d/*:ivyModule: 24.736926999999998 ms
+  d/*:ivySbt: 24.709217 ms
+  a/*:update::unresolvedWarningConfiguration: 24.60634 ms
+  b/*:dependencyPositions: 24.567539 ms
+  b/*:updateSbtClassifiers::ivyConfiguration: 24.531934 ms
+  d/*:ivyConfiguration: 24.317391999999998 ms
+  a/*:dependencyPositions: 23.846194999999998 ms
+  d/*:bootIvyConfiguration: 23.773156 ms
+  b/*:moduleSettings: 23.481531999999998 ms
+  a/*:credentials: 23.341206 ms
+  d/*:fullResolvers: 23.283566999999998 ms
+  b/*:update::unresolvedWarningConfiguration: 23.141168999999998 ms
+  c/compile:sources: 22.987374 ms
+  d/*:projectResolver: 22.947886 ms
+  d/*:scalaInstance: 22.808988 ms
+  c/*:scalaInstance: 21.976226999999998 ms
+  c/*:moduleSettings: 21.896373 ms
+  b/*:scalaInstance: 21.197336999999997 ms
+  c/*:update::unresolvedWarningConfiguration: 21.079787 ms
+  a/*:updateSbtClassifiers::ivyConfiguration: 21.018469 ms
+  a/*:scalaInstance: 19.733386 ms
+  a/*:allDependencies: 18.692082 ms
+  b/compile:sources: 18.6755 ms
+  d/*:moduleSettings: 17.675769 ms
+  d/*:updateSbtClassifiers::ivyConfiguration: 17.367547 ms
+  a/compile:sources: 17.30585 ms
+  b/*:allDependencies: 17.133891 ms
+  c/*:allDependencies: 16.951154 ms
+  d/*:update::unresolvedWarningConfiguration: 15.323925 ms
+  d/*:allDependencies: 15.226289999999999 ms
+  a/compile:update: 13.882133 ms
+  a/compile:managedSources: 13.829989999999999 ms
+  a/compile:unmanagedSources: 13.092414999999999 ms
+  b/compile:update: 12.623892999999999 ms
+  b/compile:unmanagedSources: 12.61549 ms
+  b/compile:managedSources: 12.523401999999999 ms
+  c/compile:update: 12.507988 ms
+  c/compile:unmanagedSources: 12.444904 ms
+  c/compile:managedSources: 12.085035 ms
+  c/*:dependencyCacheDirectory: 11.554309 ms
+  d/compile:sources: 11.513641 ms
+  c/*:bootResolvers: 11.429202 ms
+  c/*:updateCacheName: 11.345659999999999 ms
+  a/*:updateSbtClassifiers::externalResolvers: 10.793922 ms
+  c/*:projectDependencies: 10.553232999999999 ms
+  b/*:updateSbtClassifiers::externalResolvers: 9.339698 ms
+  c/*:updateSbtClassifiers::externalResolvers: 8.591763 ms
+  */*:settingsData: 8.285249 ms
+  d/*:incOptions: 8.196874 ms
+  d/*:dependencyPositions: 8.075004 ms
+  d/compile:unmanagedSources: 7.656461999999999 ms
+  */*:compilerCache: 7.655046 ms
+  b/*:projectDependencies: 7.573663 ms
+  d/compile:managedSources: 7.554125999999999 ms
+  a/*:updateCacheName: 7.515149999999999 ms
+  */*:packageOptions: 7.242077999999999 ms
+  d/compile:update: 7.108352999999999 ms
+  b/compile:unmanagedResources: 6.613509 ms
+  */*:buildStructure: 6.6117099999999995 ms
+  a/*:projectDependencies: 6.601088 ms
+  c/compile:unmanagedResources: 6.284825 ms
+  d/*:updateSbtClassifiers::externalResolvers: 6.100937 ms
+  b/*:updateCacheName: 5.976558 ms
+  a/*:dependencyCacheDirectory: 5.945156 ms
+  b/*:dependencyCacheDirectory: 5.9331499999999995 ms
+  a/*:bootResolvers: 5.816161999999999 ms
+  b/*:bootResolvers: 5.7159699999999996 ms
+  d/*:credentials: 4.653153 ms
+  */*:javacOptions: 4.498355999999999 ms
+  */*:sourcePositionMappers: 4.485376 ms
+  d/*:externalResolvers: 4.028255 ms
+  d/compile:compile::compilerReporter: 3.991936 ms
+  c/*:externalResolvers: 3.686285 ms
+  c/*:incOptions: 3.661502 ms
+  c/compile:compile::compilerReporter: 3.469087 ms
+  a/compile:compile::compilerReporter: 3.280798 ms
+  d/*:projectDependencies: 3.0935159999999997 ms
+  b/compile:compileAnalysisFilename: 2.849682 ms
+  b/*:incOptions: 2.844639 ms
+  b/compile:compile::compilerReporter: 2.837923 ms
+  b/*:externalResolvers: 2.7870209999999997 ms
+  a/*:externalResolvers: 2.7174639999999997 ms
+  c/compile:compileAnalysisFilename: 2.640524 ms
+  d/*:dependencyCacheDirectory: 1.4917989999999999 ms
+  execution-roots: 1.430904 ms
+  a/compile:compileAnalysisFilename: 1.427071 ms
+  a/*:incOptions: 1.375102 ms
+  */*:skip: 0.45366799999999996 ms
+  d/compile:compileAnalysisFilename: 0.41781599999999997 ms
+  a/compile:discoveredMainClasses: 0.40295 ms
+  */*:definesClass: 0.349417 ms
+  d/compile:discoveredMainClasses: 0.309631 ms
+  streams-manager: 0.264912 ms
+  */*:incOptions: 0.25893099999999997 ms
+  */*:scalacOptions: 0.249332 ms
+  */*:credentials: 0.212256 ms
+  d/*:bootResolvers: 0.18409799999999998 ms
+  state: 0.128921 ms
+  d/*:updateCacheName: 0.07882299999999999 ms
+[success] Total time: 0 s, completed 05-Jan-2016 18:01:15

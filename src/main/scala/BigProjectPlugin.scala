@@ -2,6 +2,7 @@
 // License: Apache-2.0
 package fommil
 
+import java.util.concurrent.ConcurrentHashMap
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt._
@@ -14,9 +15,22 @@ object BigProjectKeys {
    *   val jar = (artifactPath in Compile in packageBin).value
    * }}}
    */
-  val packageBinFile = TaskKey[File](
-    "package-bin-file",
+  val packageBinFile = SettingKey[File](
+    "packageBinFile",
     "Cheap way to obtain the location of the packageBin file."
+  )
+
+  /**
+   * The user must tell us when a breaking change has been introduced
+   * in a module. It will invalidate the caches of all dependent
+   * project.
+   *
+   * TODO: we could potentially automatically infer this using the
+   *       migration manager if it is fast enough.
+   */
+  val breakingChangeTask = TaskKey[Unit](
+    "breakingChange",
+    "Inform the build that a breaking change was introduced in this project."
   )
 
   /**
@@ -25,59 +39,84 @@ object BigProjectKeys {
    * Teams that use Eclipse often put tests in separate packages.
    */
   val eclipseTestsFor = SettingKey[Option[ProjectReference]](
-    "eclipse-tests-for",
+    "eclipseTestsFor",
     "When defined, points to the project that this project is testing."
   )
 
 }
 
-object BigProjectPlugin extends AutoPlugin {
-  val autoImports = BigProjectKeys
+object BigProjectPlugin extends Plugin {
+  import BigProjectKeys._
 
-  import autoImports._
-
-  private def packageBinFileTask(config: Configuration) =
-    (projectID, crossTarget, scalaBinaryVersion).map { (module, dir, scala) =>
-      val append = config match {
-        case Compile => ""
-        case Test    => "-tests"
-        case _       => "-" + config.name
-      }
-      dir / s"${module.name}_${scala}-${module.revision}$append.jar"
-    }
+  /*
+   * All references to `.value` in a Task mean that the task is
+   * aggressively invoked as a dependency to this task.
+   *
+   * However, it is possible to lazily call dependent tasks from
+   * Dynamic Tasks.
+   * http:*www.scala-sbt.org/0.13/docs/Tasks.html#Dynamic+Computations+with
+   */
 
   /**
-   * WORKAROUND https://github.com/sbt/sbt/issues/2270
-   *
-   * Stock sbt will rescan all a project's dependency's before running
-   * any task, such as `compile`. This can be prohibitive (taking 1+
-   * minutes) for top-level projects in large structures.
-   *
-   * This reimplements packageTask to only run Package if the jar
-   * doesn't exist, which limits the scope of sbt's classpath scans.
+   * Re-computes the name of the packageBin without invoking compilation.
    */
-  private def dynamicPackageBinTask(config: Configuration): Def.Initialize[Task[File]] = Def.taskDyn {
-    // all references to `.value` in a Task mean that the task is
-    // aggressively invoked as a dependency to this task. However, it
-    // is possible to lazily call dependent tasks from Dynamic Tasks.
-    // http://www.scala-sbt.org/0.13/docs/Tasks.html#Dynamic+Computations+with
-    val jar = (packageBinFile in config).value
+  private def packageBinFileSetting = Def.setting {
+    val append = configuration.value match {
+      case Compile => ""
+      case Test    => "-tests"
+      case _       => "-" + configuration.value.name
+    }
+    crossTarget.value / s"${projectID.value.name}_${scalaBinaryVersion.value}-${projectID.value.revision}$append.jar"
+  }
+
+  /**
+   * packageBin causes traversals of dependency projects.
+   *
+   * Caching must be evicted for a project when:
+   *
+   * - anything (e.g. source, config, packageBin) changes
+   *
+   * which we implement by deleting the packageBinFile on every
+   * compile.
+   *
+   * However, dependent project caches must only be evicted if a
+   * dependency introduced a breaking change.
+   *
+   * We trust the developer to inform us of breaking API changes
+   * manually using the breakingChange task.
+   *
+   * We use the file's existence as the cache.
+   */
+  private def dynamicPackageBinTask: Def.Initialize[Task[File]] = Def.taskDyn {
+    val jar = packageBinFile.value
     if (jar.exists()) Def.task {
       jar
     }
     else Def.task {
-      val s = (streams in packageBin in config).value
-      val c = (packageConfiguration in packageBin in config).value
+      val s = (streams in packageBin).value
+      val c = (packageConfiguration in packageBin).value
       Package(c, s.cacheDirectory, s.log)
       jar
     }
   }
 
-  // original causes traversals of dependency projects
-  private val transitiveUpdateCache = new java.util.concurrent.ConcurrentHashMap[String, Seq[UpdateReport]]()
+  private def deletePackageBinTask: Def.Initialize[Task[Unit]] = Def.task {
+    if (packageBinFile.value.exists())
+      packageBinFile.value.delete()
+  }
+
+  /**
+   * transitiveUpdate causes traversals of dependency projects
+   *
+   * Cache must be evicted for a project and all its dependents when:
+   *
+   * - changes to the ivy definitions
+   * - any inputs to an update phase are changed (changes to generated inputs?)
+   */
+  private val transitiveUpdateCache = new ConcurrentHashMap[ProjectReference, Seq[UpdateReport]]()
   private def dynamicTransitiveUpdateTask: Def.Initialize[Task[Seq[UpdateReport]]] = Def.taskDyn {
     // doesn't have a Configuration, always project-level
-    val key = s"${thisProject.value.id}"
+    val key = LocalProject(thisProject.value.id)
     val cached = transitiveUpdateCache.get(key)
 
     // note, must be in the dynamic task
@@ -97,12 +136,22 @@ object BigProjectPlugin extends AutoPlugin {
     }
   }
 
-  // original causes traversals of dependency projects
-  private val dependencyClasspathCache = new java.util.concurrent.ConcurrentHashMap[String, Classpath]()
+  /**
+   * dependencyClasspath causes traversals of dependency projects.
+   *
+   * Cache must be evicted for a project and all its dependents when:
+   *
+   * - anything (e.g. source, config) changes and the packageBin is not recreated
+   *
+   * we implement invalidation by checking that all files in the
+   * cached classpath exist, if any are missing, we do the work.
+   */
+  private val dependencyClasspathCache = new ConcurrentHashMap[(ProjectReference, Configuration), Classpath]()
   private def dynamicDependencyClasspathTask: Def.Initialize[Task[Classpath]] = Def.taskDyn {
-    val key = s"${thisProject.value.id}/${configuration.value}"
+    val key = (LocalProject(thisProject.value.id), configuration.value)
     val cached = dependencyClasspathCache.get(key)
-    if (cached != null) Def.task {
+
+    if (cached != null && cached.forall(_.data.exists())) Def.task {
       streams.value.log.debug(s"DEPENDENCIESCLASSPATH CACHE HIT $key")
       cached
     }
@@ -114,11 +163,40 @@ object BigProjectPlugin extends AutoPlugin {
     }
   }
 
-  // original causes traversals of dependency projects
-  private val projectDescriptorsCache = new java.util.concurrent.ConcurrentHashMap[String, Map[ModuleRevisionId, ModuleDescriptor]]()
-  private def dynamicProjectdescriptorsTask: Def.Initialize[Task[Map[ModuleRevisionId, ModuleDescriptor]]] = Def.taskDyn {
+  /**
+   * Gets invoked when the dependencyClasspath cache misses. We use
+   * this to avoid invoking compile:compile unless the jar file is
+   * missing for ThisProject.
+   */
+  val exportedProductsCache = new ConcurrentHashMap[(ProjectReference, Configuration), Classpath]()
+  def dynamicExportedProductsTask: Def.Initialize[Task[Classpath]] = Def.taskDyn {
+    val key = (LocalProject(thisProject.value.id), configuration.value)
+    val jar = packageBinFile.value
+    val cached = exportedProductsCache.get(key)
+
+    if (jar.exists() && cached != null) Def.task {
+      streams.value.log.debug(s"EXPORTEDPRODUCTS CACHE HIT $key")
+      cached
+    }
+    else Def.task {
+      streams.value.log.debug(s"EXPORTEDPRODUCTS CALCULATING $key")
+      val calculated = (Classpaths.exportProductsTask).value
+      exportedProductsCache.put(key, calculated)
+      calculated
+    }
+  }
+
+  /**
+   * projectDescriptors causes traversals of dependency projects.
+   *
+   * Cache must be evicted for a project and all its dependents when:
+   *
+   * - any project changes, all dependent project's caches must be cleared
+   */
+  private val projectDescriptorsCache = new ConcurrentHashMap[ProjectReference, Map[ModuleRevisionId, ModuleDescriptor]]()
+  private def dynamicProjectDescriptorsTask: Def.Initialize[Task[Map[ModuleRevisionId, ModuleDescriptor]]] = Def.taskDyn {
     // doesn't have a Configuration, always project-level
-    val key = s"${thisProject.value.id}"
+    val key = LocalProject(thisProject.value.id)
     val cached = projectDescriptorsCache.get(key)
 
     if (cached != null) Def.task {
@@ -134,73 +212,28 @@ object BigProjectPlugin extends AutoPlugin {
   }
 
   /**
-   * The default behaviour of `compile` leaves the `packageBin`
-   * untouched, but we'd like to delete the `packageBin` on all
-   * `compile`s to avoid staleness.
-   */
-  private def deleteBinOnCompileTask(config: Configuration) =
-    (packageBinFile in config, compile in config, streams in config) map { (bin, orig, s) =>
-      if (bin.exists()) {
-        s.log.debug(s"deleting prior to compile $bin")
-        bin.delete()
-      }
-      orig
-    }
-
-  /**
-   * Ensures that Eclipse-style tests always rebuild their main
-   * project first. This incurs the cost of rebuilding the packageBin
-   * on each test invocation but ensures the expected semantics are
-   * observed.
-   *
-   * This is attached as a post-update config since its awkward to
-   * attach a Task as a pre-step to compile.
-   *
-   * There is the potential to optimise this further by calling
-   * `Package` instead of blindly deleting.
-   */
-  private def eclipseTestVisibilityTask(config: Configuration) = Def.taskDyn {
-    val dep = eclipseTestsFor.value
-    val orig = (update in config).value
-    dep match {
-      case Some(ref) if config.extendsConfigs.contains(Test) => Def.task {
-        // limitation: only deletes the current and referenced main jars
-        // val main = (packageBinFile in Compile).value
-        // if (main.exists()) main.delete()
-        val s = (streams in Compile in ref).value
-        val upstream = (packageBinFile in Compile in ref).value
-        s.log.debug(s"checking prior to test $upstream")
-
-        if (upstream.exists()) {
-          s.log.debug(s"deleting prior to test $upstream")
-          upstream.delete()
-        }
-        orig
-      }
-      case _ => Def.task { orig }
-    }
-  }
-
-  /**
-   * It is not possible to replace existing Tasks in
-   * `projectSettings`, so users have to manually add these to each of
-   * their projects.
+   * We want to be sure that this is the last collection of Settings
+   * that runs on each project, so we require that the user manually
+   * apply these overrides.
    */
   def overrideProjectSettings(configs: Configuration*): Seq[Setting[_]] = Seq(
-    // project level, no configuration
+    // TODO: if the resolution cache is used, can we do away with some of these?
+    // TODO: how much of the caching pattern can be abstracted?
+    // TODO: can we set original impls aside and call them in the dynamic?
+    //       (instead of re-implementing, which is fragile)
     exportJars := true,
     transitiveUpdate := dynamicTransitiveUpdateTask.value,
-    projectDescriptors := dynamicProjectdescriptorsTask.value
+    projectDescriptors := dynamicProjectDescriptorsTask.value
   ) ++ configs.flatMap { config =>
       inConfig(config)(
-        dependencyClasspath := dynamicDependencyClasspathTask.value
-      ) ++ Seq(
-          // inConfig didn't work, so pass Configuration explicitly
-          packageBin in config := dynamicPackageBinTask(config).value,
-          //update in config := eclipseTestVisibilityTask(config).value,
-          //compile in config := deleteBinOnCompileTask(config).value,
-          packageBinFile in config := packageBinFileTask(config).value
+        Seq(
+          packageBinFile := packageBinFileSetting.value,
+          packageBin := dynamicPackageBinTask.value,
+          dependencyClasspath := dynamicDependencyClasspathTask.value,
+          exportedProducts := dynamicExportedProductsTask.value,
+          compile <<= compile dependsOn deletePackageBinTask
         )
+      )
     }
 
 }

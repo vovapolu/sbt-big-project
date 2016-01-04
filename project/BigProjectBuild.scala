@@ -29,9 +29,10 @@ object BigProjectBuild extends Build {
     settings(
       name := "sbt-big-project",
       ScalariformKeys.preferences := FormattingPreferences().setPreference(AlignSingleLineCaseStatements, true),
+      org.ensime.Imports.EnsimeKeys.scalariform := ScalariformKeys.preferences.value,
       scriptedLaunchOpts := Seq(
-        "-Dplugin.version=" + version.value,
-        "-Dsbt.task.timings=true"
+        "-Dplugin.version=" + version.value
+        //"-Dsbt.task.timings=true"
       ),
       scriptedBufferLog := false
     )

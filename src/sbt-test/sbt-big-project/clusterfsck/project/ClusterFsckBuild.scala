@@ -52,8 +52,7 @@ object ClusterFsckBuild extends Build {
     scalaVersion := "2.10.6",
     version := "v1",
     // doesn't catch everything https://github.com/sbt/sbt/issues/840
-    ivyLoggingLevel := UpdateLogging.Quiet,
-    updateOptions := updateOptions.value.withCachedResolution(true)
+    ivyLoggingLevel := UpdateLogging.Quiet
   )
 
   override lazy val projects: Seq[Project] = structure.toSeq.map {
@@ -61,10 +60,8 @@ object ClusterFsckBuild extends Build {
       // sidenote, it'd be nice if dependsOn could take a Seq
       depNames.foldLeft(Project(name, file(name))) {
         case (p, d) => p.dependsOn(LocalProject(d))
-      }.enablePlugins(BigProjectPlugin).settings(
-        // install BigProjectPlugin
-        BigProjectPlugin.overrideProjectSettings(Compile, Test)
-      ).settings(
+      }.settings(
+        BigProjectPlugin.overrideProjectSettings(Compile, Test),
         BigProjectTestSupport.testInstrumentation(Compile, Test)
       ).settings(
         updateOptions := updateOptions.value.withCachedResolution(true)

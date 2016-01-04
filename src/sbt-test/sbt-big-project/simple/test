@@ -1,18 +1,60 @@
+> breadcrumbsClear
+
 # check the compile
 > d/compile
-> a/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDependencies
-> b/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDependencies
-> c/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDependencies
-> d/breadcrumbsExpect compile-update compile-compile projectDependencies
+> a/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> b/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> c/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> d/breadcrumbsExpect compile-update compile-compile projectDescriptors
+$ exists a/target/scala-2.10/a_2.10-v1.jar
+$ exists b/target/scala-2.10/b_2.10-v1.jar
+$ exists c/target/scala-2.10/c_2.10-v1.jar
+$ absent d/target/scala-2.10/d_2.10-v1.jar
 > breadcrumbsClear
+
 # check that subsequent invocations don't do anything
 > d/compile
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect
 > c/breadcrumbsExpect
-> d/breadcrumbsExpect compile-update compile-compile
+> d/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> breadcrumbsClear
 > d/compile
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect
 > c/breadcrumbsExpect
-> d/breadcrumbsExpect compile-update compile-compile
+> d/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> breadcrumbsClear
+
+# check that on 'b/compile' then caches in 'b', 'c' and 'd' are
+# invalidated but c's packageBin is not rebuilt (and no recompilation
+# happens anywhere except in b... but I don't know how to assert on
+# that)
+$ touch timestamp
+> b/compile
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> c/breadcrumbsExpect
+> d/breadcrumbsExpect
+> breadcrumbsClear
+$ exists a/target/scala-2.10/a_2.10-v1.jar
+$ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
+$ absent b/target/scala-2.10/b_2.10-v1.jar
+$ exists c/target/scala-2.10/c_2.10-v1.jar
+$ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
+$ absent d/target/scala-2.10/d_2.10-v1.jar
+> d/compile
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> c/breadcrumbsExpect
+> d/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> breadcrumbsClear
+$ exists a/target/scala-2.10/a_2.10-v1.jar
+$ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
+$ exists b/target/scala-2.10/b_2.10-v1.jar
+$ newer b/target/scala-2.10/b_2.10-v1.jar timestamp
+# important: c has not been rebuilt
+# we really want to minimise the compile times
+$ exists c/target/scala-2.10/c_2.10-v1.jar
+$ newer timestamp c/target/scala-2.10/c_2.10-v1.jar
+$ absent d/target/scala-2.10/d_2.10-v1.jar

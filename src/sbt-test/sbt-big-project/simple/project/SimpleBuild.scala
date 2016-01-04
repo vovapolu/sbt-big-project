@@ -23,18 +23,16 @@ object SimpleBuild extends Build {
     scalaVersion := "2.10.6",
     version := "v1",
 
-    // forces single threaded Tasks for easy debugging
+    // forces single threaded Tasks for profiling
     concurrentRestrictions in Global := Seq(Tags.limitAll(1))
   )
 
   def simpleProject(name: String): Project = {
-    val proj = Project(name, file(name)).enablePlugins(BigProjectPlugin).settings(
-      BigProjectPlugin.overrideProjectSettings(Compile, Test)
-    ).settings (
+    BigProjectTestSupport.createSources(name)
+    Project(name, file(name)).settings(
+      BigProjectPlugin.overrideProjectSettings(Compile, Test),
       BigProjectTestSupport.testInstrumentation(Compile, Test)
     )
-    BigProjectTestSupport.createSources(proj.id)
-    proj
   }
 
   val a = simpleProject("a")
