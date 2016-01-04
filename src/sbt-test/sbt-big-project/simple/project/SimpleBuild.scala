@@ -8,6 +8,8 @@ import Def.Initialize
 import fommil.BigProjectPlugin
 import fommil.BigProjectKeys
 
+import fommil.BigProjectTestSupport
+
 /**
  * A simple linear multi-module project of the form
  *
@@ -17,23 +19,21 @@ import fommil.BigProjectKeys
  */
 object SimpleBuild extends Build {
 
-  import fommil.BigProjectTestSupport._
-
   override lazy val settings = super.settings ++ Seq(
     scalaVersion := "2.10.6",
-    version := "v1"
+    version := "v1",
+
+    // forces single threaded Tasks for easy debugging
+    concurrentRestrictions in Global := Seq(Tags.limitAll(1))
   )
 
   def simpleProject(name: String): Project = {
     val proj = Project(name, file(name)).enablePlugins(BigProjectPlugin).settings(
-      BigProjectPlugin.overrideProjectSettings(Compile),
-      BigProjectPlugin.overrideProjectSettings(Test),
-      inConfig(Compile)(testConfigInstrumentation),
-      inConfig(Test)(testConfigInstrumentation),
-      testInstrumentation,
-      scriptedTasks
+      BigProjectPlugin.overrideProjectSettings(Compile, Test)
+    ).settings (
+      BigProjectTestSupport.testInstrumentation(Compile, Test)
     )
-    createSources(proj.id)
+    BigProjectTestSupport.createSources(proj.id)
     proj
   }
 
