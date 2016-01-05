@@ -10,23 +10,12 @@ import Keys._
 
 object BigProjectKeys {
   /**
-   * WORKAROUND: artifactPath results in expensive project scan:
-   * {{{
-   *   val jar = (artifactPath in Compile in packageBin).value
-   * }}}
-   */
-  val packageBinFile = SettingKey[File](
-    "packageBinFile",
-    "Cheap way to obtain the location of the packageBin file."
-  )
-
-  /**
    * The user must tell us when a breaking change has been introduced
    * in a module. It will invalidate the caches of all dependent
    * project.
    *
    * TODO: we could potentially automatically infer this using the
-   *       migration manager if it is fast enough.
+   *       migration manager (if it is fast enough).
    */
   val breakingChangeTask = TaskKey[Unit](
     "breakingChange",
@@ -34,6 +23,8 @@ object BigProjectKeys {
   )
 
   /**
+   * NOT IMPLEMENTED YET
+   *
    * WORKAROUND: https://bugs.eclipse.org/bugs/show_bug.cgi?id=224708
    *
    * Teams that use Eclipse often put tests in separate packages.
@@ -45,29 +36,16 @@ object BigProjectKeys {
 
 }
 
+/*
+ * All references to `.value` in a Task mean that the task is
+ * aggressively invoked as a dependency to this task. Lazily call
+ * dependent tasks from Dynamic Tasks:
+ *
+ *   http://www.scala-sbt.org/0.13/docs/Tasks.html
+ */
 object BigProjectPlugin extends Plugin {
+  import Workaround2348._
   import BigProjectKeys._
-
-  /*
-   * All references to `.value` in a Task mean that the task is
-   * aggressively invoked as a dependency to this task.
-   *
-   * However, it is possible to lazily call dependent tasks from
-   * Dynamic Tasks.
-   * http:*www.scala-sbt.org/0.13/docs/Tasks.html#Dynamic+Computations+with
-   */
-
-  /**
-   * Re-computes the name of the packageBin without invoking compilation.
-   */
-  private def packageBinFileSetting = Def.setting {
-    val append = configuration.value match {
-      case Compile => ""
-      case Test    => "-tests"
-      case _       => "-" + configuration.value.name
-    }
-    crossTarget.value / s"${projectID.value.name}_${scalaBinaryVersion.value}-${projectID.value.revision}$append.jar"
-  }
 
   /**
    * packageBin causes traversals of dependency projects.
@@ -124,11 +102,9 @@ object BigProjectPlugin extends Plugin {
     val selectDeps = ScopeFilter(make.inDependencies(ThisProject, includeRoot = false))
 
     if (cached != null) Def.task {
-      streams.value.log.debug(s"TRANSITIVEUPDATE CACHE HIT $key")
       cached
     }
     else Def.task {
-      streams.value.log.debug(s"TRANSITIVEUPDATE CALCULATING $key")
       val allUpdates = update.?.all(selectDeps).value
       val calculated = allUpdates.flatten ++ globalPluginUpdate.?.value
       transitiveUpdateCache.put(key, calculated)
@@ -152,11 +128,9 @@ object BigProjectPlugin extends Plugin {
     val cached = dependencyClasspathCache.get(key)
 
     if (cached != null && cached.forall(_.data.exists())) Def.task {
-      streams.value.log.debug(s"DEPENDENCIESCLASSPATH CACHE HIT $key")
       cached
     }
     else Def.task {
-      streams.value.log.debug(s"DEPENDENCIESCLASSPATH CALCULATING $key")
       val calculated = internalDependencyClasspath.value ++ externalDependencyClasspath.value
       dependencyClasspathCache.put(key, calculated)
       calculated
@@ -175,11 +149,9 @@ object BigProjectPlugin extends Plugin {
     val cached = exportedProductsCache.get(key)
 
     if (jar.exists() && cached != null) Def.task {
-      streams.value.log.debug(s"EXPORTEDPRODUCTS CACHE HIT $key")
       cached
     }
     else Def.task {
-      streams.value.log.debug(s"EXPORTEDPRODUCTS CALCULATING $key")
       val calculated = (Classpaths.exportProductsTask).value
       exportedProductsCache.put(key, calculated)
       calculated
@@ -200,11 +172,9 @@ object BigProjectPlugin extends Plugin {
     val cached = projectDescriptorsCache.get(key)
 
     if (cached != null) Def.task {
-      streams.value.log.debug(s"PROJECTDESCRIPTORS CACHE HIT $key")
       cached
     }
     else Def.task {
-      streams.value.log.debug(s"PROJECTDESCRIPTORS CALCULATING $key")
       val calculated = Classpaths.depMap.value
       projectDescriptorsCache.put(key, calculated)
       calculated
@@ -236,4 +206,25 @@ object BigProjectPlugin extends Plugin {
       )
     }
 
+}
+
+/**
+ * WORKAROUND: https://github.com/sbt/sbt/issues/2348
+ *
+ * Re-computes the name of the packageBin without invoking compilation.
+ */
+object Workaround2348 {
+  val packageBinFile = SettingKey[File](
+    "packageBinFile",
+    "Cheap way to obtain the location of the packageBin file."
+  )
+
+  def packageBinFileSetting = Def.setting {
+    val append = configuration.value match {
+      case Compile => ""
+      case Test    => "-tests"
+      case _       => "-" + configuration.value.name
+    }
+    crossTarget.value / s"${projectID.value.name}_${scalaBinaryVersion.value}-${projectID.value.revision}$append.jar"
+  }
 }
