@@ -48,6 +48,8 @@ object BigProjectTestSupport {
 
   val breadcrumbsExpect = inputKey[Unit]("Check that only these breadcrumbs exist.")
 
+  val dependentsExpect = inputKey[Unit]("Check that the computed dependents match.")
+
   val scriptedTasks = Seq(
     breadcrumbs := breadcrumbsTask.value,
     breadcrumbsClear := breadcrumbsClearTask.value,
@@ -61,6 +63,15 @@ object BigProjectTestSupport {
       if (expect != got)
         throw new MessageOnlyException(
           s"expected ${expect.size} breadcrumbs in $base but got ${got.size}: $got"
+        )
+    },
+    dependentsExpect := {
+      val proj = thisProject.value
+      val expect = parser.parsed.toSet
+      val got = BigProjectPlugin.dependents(state.value, proj).map(_.id)
+      if (expect != got)
+        throw new MessageOnlyException(
+          s"expected ${expect.size} dependents for ${proj.id} but got ${got.size}: $got"
         )
     }
   )

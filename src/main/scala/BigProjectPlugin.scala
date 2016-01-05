@@ -182,6 +182,35 @@ object BigProjectPlugin extends Plugin {
   }
 
   /**
+   * Returns the exhaustive set of projects that depend on the given one
+   * (not including itself).
+   */
+  private[fommil] def dependents(state: State, proj: ResolvedProject): Set[ResolvedProject] = {
+    val extracted = Project.extract(state)
+    val structure = extracted.structure
+
+    // builds the full dependents tree
+    val dependents = {
+      for {
+        proj <- structure.allProjects
+        dep <- proj.dependencies
+        resolved <- Project.getProject(dep.project, structure)
+      } yield (resolved, proj)
+    }.groupBy {
+      case (child, parent) => child
+    }.map {
+      case (child, grouped) => (child, grouped.map(_._2).toSet)
+    }
+
+    def deeper(p: ResolvedProject): Set[ResolvedProject] = {
+      val deps = dependents.getOrElse(p, Set.empty)
+      deps ++ deps.flatMap(deeper)
+    }
+
+    deeper(proj)
+  }
+
+  /**
    * We want to be sure that this is the last collection of Settings
    * that runs on each project, so we require that the user manually
    * apply these overrides.

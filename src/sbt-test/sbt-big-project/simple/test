@@ -1,5 +1,11 @@
 > breadcrumbsClear
 
+# check internal computation
+> a/dependentsExpect b c d
+> b/dependentsExpect c d
+> c/dependentsExpect d
+> d/dependentsExpect
+
 # check the compile
 > d/compile
 > a/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
