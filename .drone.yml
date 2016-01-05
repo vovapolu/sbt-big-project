@@ -9,5 +9,5 @@ build:
     - sbt compile
     - sbt scripted
     - if [ "$CI_BRANCH" = "master" ] ; then
-        sbt ++$SCALA_VERSION publish ;
+        sbt publish ;
       fi
