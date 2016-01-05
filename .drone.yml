@@ -4,10 +4,11 @@ build:
   environment:
     - SONATYPE_USERNAME=$$SONATYPE_USERNAME
     - SONATYPE_PASSWORD=$$SONATYPE_PASSWORD
+    - SCALA_VERSION=2.10.6
   commands:
     - git log | head -n 20
-    - sbt compile
-    - sbt scripted
-    - if [ "$CI_BRANCH" = "master" ] ; then
-        sbt publish ;
+    - sbt ++$SCALA_VERSION compile
+    - sbt ++$SCALA_VERSION scripted
+    - if [ -z "$CI_PULL_REQUEST" ] ; then
+        sbt ++$SCALA_VERSION publish ;
       fi
