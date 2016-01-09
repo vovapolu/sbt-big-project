@@ -7,6 +7,8 @@ import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt._
 import Keys._
+import sbt.inc.Analysis
+import sbt.inc.LastModified
 
 /**
  * Publicly exposed keys for settings and tasks that the user may wish
@@ -82,10 +84,20 @@ object BigProjectSettings extends Plugin {
     }
   }
 
-  private def deletePackageBinTask: Def.Initialize[Task[Unit]] = Def.task {
-    if (packageBinFile.value.exists())
-      packageBinFile.value.delete()
-  }
+  private def compileThatDeletesPackageBinTask =
+    (compile, packageBinFile).map { (res, jar) =>
+      // BUG: this doesn't detect deleted classfiles
+      // the .values LastModified are *wrong*
+      // WORKAROUND https://github.com/sbt/sbt/issues/2359
+      val latestClassTime = res.stamps.products.keys.map {
+        f => f.lastModified() // inefficient on Windows
+      }.max
+      val latestCompileTime = res.compilations.allCompilations.map(_.startTime).max
+      if (latestCompileTime <= latestClassTime && jar.exists()) {
+        jar.delete()
+      }
+      res
+    }
 
   /**
    * transitiveUpdate causes traversals of dependency projects
@@ -234,7 +246,7 @@ object BigProjectSettings extends Plugin {
           packageBin := dynamicPackageBinTask.value,
           dependencyClasspath := dynamicDependencyClasspathTask.value,
           exportedProducts := dynamicExportedProductsTask.value,
-          compile <<= compile dependsOn deletePackageBinTask
+          compile := compileThatDeletesPackageBinTask.value
         )
       )
     }
