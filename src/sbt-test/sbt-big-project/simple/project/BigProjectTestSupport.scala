@@ -68,7 +68,7 @@ object BigProjectTestSupport {
     dependentsExpect := {
       val proj = thisProject.value
       val expect = parser.parsed.toSet
-      val got = BigProjectPlugin.dependents(state.value, proj).map(_.id)
+      val got = BigProjectSettings.dependents(state.value, proj).map(_.id)
       if (expect != got)
         throw new MessageOnlyException(
           s"expected ${expect.size} dependents for ${proj.id} but got ${got.size}: $got"

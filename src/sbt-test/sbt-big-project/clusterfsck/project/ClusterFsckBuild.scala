@@ -5,10 +5,7 @@ import sbt._
 import Keys._
 import Def.Initialize
 
-import fommil.BigProjectPlugin
-import fommil.BigProjectKeys
-
-import fommil.BigProjectTestSupport
+import fommil._
 
 /**
  * Example large project structure. Specific challenges:
@@ -61,7 +58,7 @@ object ClusterFsckBuild extends Build {
       depNames.foldLeft(Project(name, file(name))) {
         case (p, d) => p.dependsOn(LocalProject(d))
       }.settings(
-        BigProjectPlugin.overrideProjectSettings(Compile, Test),
+        BigProjectSettings.overrideProjectSettings(Compile, Test),
         BigProjectTestSupport.testInstrumentation(Compile, Test)
       ).settings(
         updateOptions := updateOptions.value.withCachedResolution(true)

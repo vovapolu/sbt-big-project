@@ -5,10 +5,7 @@ import sbt._
 import Keys._
 import Def.Initialize
 
-import fommil.BigProjectPlugin
-import fommil.BigProjectKeys
-
-import fommil.BigProjectTestSupport
+import fommil._
 
 /**
  * A simple linear multi-module project of the form
@@ -30,7 +27,7 @@ object SimpleBuild extends Build {
   def simpleProject(name: String): Project = {
     BigProjectTestSupport.createSources(name)
     Project(name, file(name)).settings(
-      BigProjectPlugin.overrideProjectSettings(Compile, Test),
+      BigProjectSettings.overrideProjectSettings(Compile, Test),
       BigProjectTestSupport.testInstrumentation(Compile, Test)
     )
   }

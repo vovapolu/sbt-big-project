@@ -8,6 +8,10 @@ import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt._
 import Keys._
 
+/**
+ * Publicly exposed keys for settings and tasks that the user may wish
+ * to use.
+ */
 object BigProjectKeys {
   /**
    * The user must tell us when a breaking change has been introduced
@@ -43,7 +47,7 @@ object BigProjectKeys {
  *
  *   http://www.scala-sbt.org/0.13/docs/Tasks.html
  */
-object BigProjectPlugin extends Plugin {
+object BigProjectSettings extends Plugin {
   import Workaround2348._
   import BigProjectKeys._
 
