@@ -84,10 +84,10 @@ object BigProjectSettings extends Plugin {
     }
   }
 
+
   private def compileThatDeletesPackageBinTask =
     (compile, packageBinFile).map { (res, jar) =>
-      // BUG: this doesn't detect deleted classfiles
-      // the .values LastModified are *wrong*
+      // BUG https://github.com/sbt/sbt/issues/2361
       // WORKAROUND https://github.com/sbt/sbt/issues/2359
       val latestClassTime = res.stamps.products.keys.map {
         f => f.lastModified() // inefficient on Windows
