@@ -5,10 +5,10 @@ import sbt._
 import Keys._
 
 object SonatypeSupport {
-  val GPL3 = ("GPL 3.0" -> url("http://opensource.org/licenses/GPL-3.0"))
-  val LGPL3 = ("LGPL 3.0" -> url("http://www.gnu.org/licenses/LGPL-3.0"))
-  val Apache2 = ("Apache-2.0" -> url("https://opensource.org/licenses/Apache-2.0"))
-  val BSD3 = ("BSD-3-Clause" -> url("http://opensource.org/licenses/BSD-3-Clause"))
+  val GPL3 = ("GPL 3.0" -> url("http://www.gnu.org/licenses/gpl.html"))
+  val LGPL3 = ("LGPL 3.0" -> url("http://www.gnu.org/licenses/lgpl.html"))
+  val Apache2 = ("Apache-2.0" -> url("http://directory.fsf.org/wiki/License:Apache2.0"))
+  val BSD3 = ("BSD-3-Clause" -> url("http://directory.fsf.org/wiki/License:BSD_3Clause"))
 
   def sonatype(
     ghUser: String,
