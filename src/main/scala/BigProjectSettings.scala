@@ -23,9 +23,17 @@ object BigProjectKeys {
    * TODO: we could potentially automatically infer this using the
    *       migration manager (if it is fast enough).
    */
-  val breakingChangeTask = TaskKey[Unit](
+  val breakingChange = TaskKey[Unit](
     "breakingChange",
     "Inform the build that a breaking change was introduced in this project."
+  )
+
+  /**
+   * Allows the user to forcibly rebuild a jar.
+   */
+  val packageBinForce = TaskKey[Unit](
+    "packageBinForce",
+    "Falls back to the original sbt behaviour: incremental compile then rebuilding the jar if needed."
   )
 
   /**
@@ -84,17 +92,26 @@ object BigProjectSettings extends Plugin {
     }
   }
 
+  private def packageBinForceTask = (packageBinFile, streams in packageBin, packageConfiguration in packageBin).map { (jar, s, c) =>
+    Package(c, s.cacheDirectory, s.log)
+    jar
+  }
 
   private def compileThatDeletesPackageBinTask =
-    (compile, packageBinFile).map { (res, jar) =>
-      // BUG https://github.com/sbt/sbt/issues/2361
-      // WORKAROUND https://github.com/sbt/sbt/issues/2359
-      val latestClassTime = res.stamps.products.keys.map {
-        f => f.lastModified() // inefficient on Windows
-      }.max
-      val latestCompileTime = res.compilations.allCompilations.map(_.startTime).max
-      if (latestCompileTime <= latestClassTime && jar.exists()) {
-        jar.delete()
+    (compile, packageBinFile, state).map { (res, jar, s) =>
+      if (jar.exists()) {
+        // BUG https://github.com/sbt/sbt/issues/2361
+        // WORKAROUND https://github.com/sbt/sbt/issues/2359
+        val latestClassTime = res.stamps.products.keys.map {
+          f => f.lastModified() // inefficient on Windows
+        }.reduceOption( _ max _ )
+        latestClassTime match {
+          case Some(classTime) if jar.lastModified() < classTime =>
+            // BUG the jars are not being recreated when downstream needs them!
+            s.log.info(s"Delete $jar because ${jar.lastModified()} <= $classTime")
+            jar.delete()
+          case _ =>
+        }
       }
       res
     }
@@ -243,6 +260,7 @@ object BigProjectSettings extends Plugin {
       inConfig(config)(
         Seq(
           packageBinFile := packageBinFileSetting.value,
+          packageBinForce := packageBinForceTask.value,
           packageBin := dynamicPackageBinTask.value,
           dependencyClasspath := dynamicDependencyClasspathTask.value,
           exportedProducts := dynamicExportedProductsTask.value,
