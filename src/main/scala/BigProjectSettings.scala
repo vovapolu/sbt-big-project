@@ -104,7 +104,7 @@ object BigProjectSettings extends Plugin {
         // WORKAROUND https://github.com/sbt/sbt/issues/2359
         val latestClassTime = res.stamps.products.keys.map {
           f => f.lastModified() // inefficient on Windows
-        }.reduceOption( _ max _ )
+        }.reduceOption(_ max _)
         latestClassTime match {
           case Some(classTime) if jar.lastModified() < classTime =>
             // BUG the jars are not being recreated when downstream needs them!
