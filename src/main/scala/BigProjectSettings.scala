@@ -1,5 +1,5 @@
-// Copyright (C) 2015 Sam Halliday
-// License: Apache-2.0
+// Copyright (C) 2015 - 2016 Sam Halliday
+// Licence: Apache-2.0
 package fommil
 
 import java.util.concurrent.ConcurrentHashMap
@@ -16,24 +16,15 @@ import sbt.inc.LastModified
  */
 object BigProjectKeys {
   /**
+   * NOT IMPLEMENTED YET
+   *
    * The user must tell us when a breaking change has been introduced
    * in a module. It will invalidate the caches of all dependent
    * project.
-   *
-   * TODO: we could potentially automatically infer this using the
-   *       migration manager (if it is fast enough).
    */
   val breakingChange = TaskKey[Unit](
     "breakingChange",
     "Inform the build that a breaking change was introduced in this project."
-  )
-
-  /**
-   * Allows the user to forcibly rebuild a jar.
-   */
-  val packageBinForce = TaskKey[Unit](
-    "packageBinForce",
-    "Falls back to the original sbt behaviour: incremental compile then rebuilding the jar if needed."
   )
 
   /**
@@ -58,8 +49,18 @@ object BigProjectKeys {
  *   http://www.scala-sbt.org/0.13/docs/Tasks.html
  */
 object BigProjectSettings extends Plugin {
-  import Workaround2348._
   import BigProjectKeys._
+
+  /**
+   * TrackLevel.TrackIfMissing will not invalidate or rebuild jar
+   * files if the user explicitly recompiles a project. We delete the
+   * packageBin associated to a project when compiling that project so
+   * that we never have stale jars.
+   */
+  private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
+    s.log.debug(s"Deleting $jar")
+    jar.delete()
+  }
 
   /**
    * packageBin causes traversals of dependency projects.
@@ -80,7 +81,7 @@ object BigProjectSettings extends Plugin {
    * We use the file's existence as the cache.
    */
   private def dynamicPackageBinTask: Def.Initialize[Task[File]] = Def.taskDyn {
-    val jar = packageBinFile.value
+    val jar = (artifactPath in packageBin).value
     if (jar.exists()) Def.task {
       jar
     }
@@ -91,30 +92,6 @@ object BigProjectSettings extends Plugin {
       jar
     }
   }
-
-  private def packageBinForceTask = (packageBinFile, streams in packageBin, packageConfiguration in packageBin).map { (jar, s, c) =>
-    Package(c, s.cacheDirectory, s.log)
-    jar
-  }
-
-  private def compileThatDeletesPackageBinTask =
-    (compile, packageBinFile, state).map { (res, jar, s) =>
-      if (jar.exists()) {
-        // BUG https://github.com/sbt/sbt/issues/2361
-        // WORKAROUND https://github.com/sbt/sbt/issues/2359
-        val latestClassTime = res.stamps.products.keys.map {
-          f => f.lastModified() // inefficient on Windows
-        }.reduceOption(_ max _)
-        latestClassTime match {
-          case Some(classTime) if jar.lastModified() < classTime =>
-            // BUG the jars are not being recreated when downstream needs them!
-            s.log.info(s"Delete $jar because ${jar.lastModified()} <= $classTime")
-            jar.delete()
-          case _ =>
-        }
-      }
-      res
-    }
 
   /**
    * transitiveUpdate causes traversals of dependency projects
@@ -178,7 +155,7 @@ object BigProjectSettings extends Plugin {
   val exportedProductsCache = new ConcurrentHashMap[(ProjectReference, Configuration), Classpath]()
   def dynamicExportedProductsTask: Def.Initialize[Task[Classpath]] = Def.taskDyn {
     val key = (LocalProject(thisProject.value.id), configuration.value)
-    val jar = packageBinFile.value
+    val jar = (artifactPath in packageBin).value
     val cached = exportedProductsCache.get(key)
 
     if (jar.exists() && cached != null) Def.task {
@@ -249,45 +226,19 @@ object BigProjectSettings extends Plugin {
    * apply these overrides.
    */
   def overrideProjectSettings(configs: Configuration*): Seq[Setting[_]] = Seq(
-    // TODO: if the resolution cache is used, can we do away with some of these?
-    // TODO: how much of the caching pattern can be abstracted?
-    // TODO: can we set original impls aside and call them in the dynamic?
-    //       (instead of re-implementing, which is fragile)
     exportJars := true,
+    trackInternalDependencies := TrackLevel.TrackIfMissing,
     transitiveUpdate := dynamicTransitiveUpdateTask.value,
     projectDescriptors := dynamicProjectDescriptorsTask.value
   ) ++ configs.flatMap { config =>
       inConfig(config)(
         Seq(
-          packageBinFile := packageBinFileSetting.value,
-          packageBinForce := packageBinForceTask.value,
           packageBin := dynamicPackageBinTask.value,
           dependencyClasspath := dynamicDependencyClasspathTask.value,
           exportedProducts := dynamicExportedProductsTask.value,
-          compile := compileThatDeletesPackageBinTask.value
+          compile <<= compile dependsOn deletePackageBinTask
         )
       )
     }
 
-}
-
-/**
- * WORKAROUND: https://github.com/sbt/sbt/issues/2348
- *
- * Re-computes the name of the packageBin without invoking compilation.
- */
-object Workaround2348 {
-  val packageBinFile = SettingKey[File](
-    "packageBinFile",
-    "Cheap way to obtain the location of the packageBin file."
-  )
-
-  def packageBinFileSetting = Def.setting {
-    val append = configuration.value match {
-      case Compile => ""
-      case Test    => "-tests"
-      case _       => "-" + configuration.value.name
-    }
-    crossTarget.value / s"${projectID.value.name}_${scalaBinaryVersion.value}-${projectID.value.revision}$append.jar"
-  }
 }
