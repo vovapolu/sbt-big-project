@@ -1,3 +1,6 @@
+# note that all "newer" checks need a 1 second pause before the action
+# due to OS / filesystem limitations.
+
 > breadcrumbsClear
 
 # check internal computation
@@ -6,7 +9,7 @@
 > c/dependentsExpect d
 > d/dependentsExpect
 
-# check the compile
+# compile d
 > d/compile
 > a/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
 > b/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
@@ -18,7 +21,7 @@ $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ absent d/target/scala-2.10/d_2.10-v1.jar
 > breadcrumbsClear
 
-# check that subsequent invocations don't do anything
+# check that another d/compile doesn't invoke a/compile:compile, b/compile:compile or c/compile:compile
 > d/compile
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect
@@ -32,11 +35,52 @@ $ absent d/target/scala-2.10/d_2.10-v1.jar
 > d/breadcrumbsExpect compile-update compile-compile projectDescriptors
 > breadcrumbsClear
 
-# check that on 'b/compile' then caches in 'b', 'c' and 'd' are
-# invalidated but c's packageBin is not rebuilt (and no recompilation
-# happens anywhere except in b... but I don't know how to assert on
-# that)
+# after a reload, check that d/compile doesn't invoke
+# a/compile:compile, etc (new session not possible with scripted)
+> d/compile
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect
+> d/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> breadcrumbsClear
+> d/compile
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect
+> d/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> breadcrumbsClear
+
+# make a trivial change in b, a d/compile should not recompile
+# (this is expected, but not ideal, and may be addressed)
 $ touch timestamp
+$ sleep 1000
+$ touch b/main/src/scala/Foo.scala
+> d/compile
+$ newer timestamp b/target/scala-2.10/b_2.10-v1.jar
+> breadcrumbsClear
+
+# delete b's jar, d/compile should recompile b's jar
+$ delete b/target/scala-2.10/b_2.10-v1.jar
+> d/compile
+$ exists b/target/scala-2.10/b_2.10-v1.jar
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect compile-update compile-compile projectDescriptors compile-packageBin
+> c/breadcrumbsExpect compile-update projectDescriptors
+> d/breadcrumbsExpect compile-compile compile-update projectDescriptors
+> breadcrumbsClear
+
+# delete b's classes, d/compile should not recompile b
+$ delete b/target/scala-2.10/classes
+> d/compile
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect
+> d/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> breadcrumbsClear
+
+# b/compile recompiles b and delete's (only) its jar
+$ touch timestamp
+$ sleep 1000
 > b/compile
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect compile-update compile-compile projectDescriptors
@@ -47,20 +91,32 @@ $ exists a/target/scala-2.10/a_2.10-v1.jar
 $ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
 $ absent b/target/scala-2.10/b_2.10-v1.jar
 $ exists c/target/scala-2.10/c_2.10-v1.jar
-$ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
-$ absent d/target/scala-2.10/d_2.10-v1.jar
+$ newer timestamp c/target/scala-2.10/c_2.10-v1.jar
+
+# another b/compile attempts to recompile b
+> b/compile
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> c/breadcrumbsExpect
+> d/breadcrumbsExpect
+> breadcrumbsClear
+
+# recompiling d again should (only) rebuild b's jars
+$ touch timestamp
+$ sleep 1000
 > d/compile
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
-> c/breadcrumbsExpect
+> c/breadcrumbsExpect compile-update projectDescriptors
 > d/breadcrumbsExpect compile-update compile-compile projectDescriptors
 > breadcrumbsClear
 $ exists a/target/scala-2.10/a_2.10-v1.jar
 $ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
 $ exists b/target/scala-2.10/b_2.10-v1.jar
 $ newer b/target/scala-2.10/b_2.10-v1.jar timestamp
-# important: c has not been rebuilt
-# we really want to minimise the compile times
 $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ newer timestamp c/target/scala-2.10/c_2.10-v1.jar
 $ absent d/target/scala-2.10/d_2.10-v1.jar
+
+
+# TODO check packageBin / runMain behaviour

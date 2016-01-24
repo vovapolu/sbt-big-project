@@ -15,7 +15,8 @@ object BigProjectTestSupport {
   // Test instrumentation to detect invocations of expensive Tasks
   // WORKAROUND https://github.com/sbt/sbt/issues/1209
   def testInstrumentation(configs: Configuration*): Seq[Setting[_]] = scriptedTasks ++ Seq(
-    projectDescriptors <<= projectDescriptors dependsOn breadcrumb("projectDescriptors")
+    projectDescriptors <<= projectDescriptors dependsOn breadcrumb("projectDescriptors"),
+    ivyLoggingLevel := UpdateLogging.Quiet
   ) ++ configs.flatMap { config =>
       inConfig(config) {
         Seq(
