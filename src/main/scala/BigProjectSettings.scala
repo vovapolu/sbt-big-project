@@ -17,8 +17,6 @@ import sbt.inc.LastModified
  */
 object BigProjectKeys {
   /**
-   * NOT IMPLEMENTED YET
-   *
    * The user must tell us when a breaking change has been introduced
    * in a module. It will invalidate the caches of all dependent
    * project.
@@ -185,7 +183,7 @@ object BigProjectSettings extends Plugin {
    * Returns the exhaustive set of projects that depend on the given one
    * (not including itself).
    */
-  private[fommil] def dependents(state: State, proj: ResolvedProject): Set[ResolvedProject] = {
+  private[fommil] def dependents(state: State, proj: ResolvedProject): Set[ProjectRef] = {
     val extracted = Project.extract(state)
     val structure = extracted.structure
 
@@ -207,8 +205,34 @@ object BigProjectSettings extends Plugin {
       deps ++ deps.flatMap(deeper)
     }
 
-    deeper(proj)
+    val refs: Map[String, ProjectRef] = structure.allProjectRefs.map { ref =>
+      (ref.project, ref)
+    }.toMap
+
+    deeper(proj).map { resolved => refs(resolved.id) }
   }
+
+  /**
+   * Deletes all the packageBins of dependent projects.
+   */
+  def breakingChangeTask: Def.Initialize[Task[Unit]] =
+    (state, thisProject).map { (s, proj) =>
+      val downstream = dependents(s, proj).toSeq
+
+      // Eugene and Josh are going to yell at me...
+      // manually invoke some settings off-graph
+      val structure = Project.extract(s).structure
+      for {
+        p <- downstream
+        configs <- (ivyConfigurations in p) get structure.data
+        config <- configs
+        /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
+        if jar.exists()
+      } {
+        s.log.info(s"Deleting $jar")
+        jar.delete()
+      }
+    }
 
   /**
    * We want to be sure that this is the last collection of Settings
@@ -219,7 +243,8 @@ object BigProjectSettings extends Plugin {
     exportJars := true,
     trackInternalDependencies := TrackLevel.TrackIfMissing,
     transitiveUpdate <<= dynamicTransitiveUpdateTask,
-    projectDescriptors <<= dynamicProjectDescriptorsTask
+    projectDescriptors <<= dynamicProjectDescriptorsTask,
+    breakingChange <<= breakingChangeTask
   ) ++ configs.flatMap { config =>
       inConfig(config)(
         Seq(

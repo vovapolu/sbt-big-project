@@ -118,5 +118,13 @@ $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ newer timestamp c/target/scala-2.10/c_2.10-v1.jar
 $ absent d/target/scala-2.10/d_2.10-v1.jar
 
+# making a breaking change in b should nuke downstream jars
+# but not b's jar.
+> d/packageBin
+> b/breakingChange
+$ exists a/target/scala-2.10/a_2.10-v1.jar
+$ exists b/target/scala-2.10/b_2.10-v1.jar
+$ absent c/target/scala-2.10/c_2.10-v1.jar
+$ absent d/target/scala-2.10/d_2.10-v1.jar
 
 # TODO check packageBin / runMain behaviour
