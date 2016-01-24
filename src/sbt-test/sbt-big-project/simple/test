@@ -122,9 +122,36 @@ $ absent d/target/scala-2.10/d_2.10-v1.jar
 # but not b's jar.
 > d/packageBin
 > b/breakingChange
+> breadcrumbsClear
 $ exists a/target/scala-2.10/a_2.10-v1.jar
 $ exists b/target/scala-2.10/b_2.10-v1.jar
 $ absent c/target/scala-2.10/c_2.10-v1.jar
 $ absent d/target/scala-2.10/d_2.10-v1.jar
 
-# TODO check packageBin / runMain behaviour
+# check that runMain will build the packageBin
+> d/runMain d.Foo
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> d/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> breadcrumbsClear
+
+# a second invocation of runMain should succeed
+> d/runMain d.Foo
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect
+> d/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> breadcrumbsClear
+
+# try to weed out any race conditions around the deletion of the jar
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo
+> d/runMain d.Foo

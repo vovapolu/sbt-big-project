@@ -251,7 +251,8 @@ object BigProjectSettings extends Plugin {
           packageBin <<= dynamicPackageBinTask,
           dependencyClasspath <<= dynamicDependencyClasspathTask,
           exportedProducts <<= dynamicExportedProductsTask,
-          compile <<= compile dependsOn deletePackageBinTask
+          compile <<= compile dependsOn deletePackageBinTask,
+          runMain <<= runMain dependsOn deletePackageBinTask
         )
       )
     }
