@@ -58,7 +58,17 @@ object BigProjectSettings extends Plugin {
    */
   private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
     s.log.debug(s"Deleting $jar")
-    jar.delete()
+    def delete(attempt: Int = 0): Unit =
+      if (attempt < 5 && jar.exists && !jar.delete()) {
+        s.log.warn(s"Failed to delete $jar (attempt $attempt), see https://issues.scala-lang.org/browse/SI-9632")
+        System.gc()
+        System.runFinalization()
+        System.gc()
+        delete(attempt + 1)
+      }
+    delete()
+    if (jar.exists())
+      s.log.error(s"Failed to delete $jar")
   }
 
   // WORKAROUND https://github.com/sbt/sbt/issues/2417
@@ -241,6 +251,7 @@ object BigProjectSettings extends Plugin {
    */
   def overrideProjectSettings(configs: Configuration*): Seq[Setting[_]] = Seq(
     exportJars := true,
+    forcegc in Global := true, // workaround SI-9632
     trackInternalDependencies := TrackLevel.TrackIfMissing,
     transitiveUpdate <<= dynamicTransitiveUpdateTask,
     projectDescriptors <<= dynamicProjectDescriptorsTask,
