@@ -33,6 +33,8 @@ object SimpleBuild extends Build {
   val b = simpleProject("b") dependsOn(a)
   val c = simpleProject("c") dependsOn(b)
   val d = simpleProject("d") dependsOn(c)
-
+  val e = simpleProject("e") dependsOn(c) settings (
+    BigProjectKeys.eclipseTestsFor := c
+  )
 
 }

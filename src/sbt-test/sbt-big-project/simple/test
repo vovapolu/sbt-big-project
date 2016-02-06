@@ -4,10 +4,11 @@
 > breadcrumbsClear
 
 # check internal computation
-> a/dependentsExpect b c d
-> b/dependentsExpect c d
-> c/dependentsExpect d
+> a/dependentsExpect b c d e
+> b/dependentsExpect c d e
+> c/dependentsExpect d e
 > d/dependentsExpect
+> e/dependentsExpect
 
 # compile d
 > d/compile
@@ -158,7 +159,6 @@ $ absent d/target/scala-2.10/d_2.10-v1.jar
 > breadcrumbsClear
 
 # Test configurations should always recompile their Compile configuration
-> debug
 > c/test
 $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ exists c/target/scala-2.10/c_2.10-v1-tests.jar
@@ -179,4 +179,33 @@ $ newer c/target/scala-2.10/c_2.10-v1-tests.jar timestamp
 > b/breadcrumbsExpect
 > c/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
 > d/breadcrumbsExpect
+> breadcrumbsClear
+
+# Eclipse-style test projects should always recompile their main project
+> e/test:packageBin
+$ exists d/target/scala-2.10/d_2.10-v1.jar
+$ exists e/target/scala-2.10/e_2.10-v1.jar
+$ exists e/target/scala-2.10/e_2.10-v1-tests.jar
+$ sleep 1000
+$ touch timestamp
+$ sleep 1000
+> breadcrumbsClear
+> e/test
+$ exists a/target/scala-2.10/a_2.10-v1.jar
+$ exists b/target/scala-2.10/b_2.10-v1.jar
+$ exists c/target/scala-2.10/c_2.10-v1.jar
+$ exists d/target/scala-2.10/d_2.10-v1.jar
+$ exists e/target/scala-2.10/e_2.10-v1.jar
+$ exists e/target/scala-2.10/e_2.10-v1-tests.jar
+$ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
+$ newer timestamp b/target/scala-2.10/b_2.10-v1.jar
+$ newer timestamp d/target/scala-2.10/d_2.10-v1.jar
+$ newer c/target/scala-2.10/c_2.10-v1.jar timestamp
+$ newer e/target/scala-2.10/e_2.10-v1.jar timestamp
+$ newer e/target/scala-2.10/e_2.10-v1-tests.jar timestamp
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect compile-packageBin projectDescriptors compile-compile compile-update
+> d/breadcrumbsExpect
+> e/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
 > breadcrumbsClear

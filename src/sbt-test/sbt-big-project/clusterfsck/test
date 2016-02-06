@@ -14,4 +14,38 @@
 > obf-518286142/compile
 > obf--619038209/breadcrumbsExpect
 > obf-518286142/breadcrumbsExpect compile-update compile-compile projectDescriptors
+> breadcrumbsClear
 
+# make an edit to a low-level project and run the app
+> obf--619038209/compile
+> obf-518286142/runMain obf518286142.Foo
+> obf--619038209/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> obf-518286142/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
+> breadcrumbsClear
+
+# run a test ensuring that the relevant tested codebase is re-compiled:
+> obf-518286142/test
+> obf--619038209/breadcrumbsExpect
+> obf-518286142/breadcrumbsExpect compile-update compile-compile compile-packageBin test-update test-compile test-packageBin projectDescriptors
+> breadcrumbsClear
+
+# check that running Eclipse-style tests always compiles the main project
+> obf--1788614413/test
+> obf--619038209/breadcrumbsExpect projectDescriptors
+> obf-518286142/breadcrumbsExpect compile-packageBin compile-update compile-compile projectDescriptors
+> obf--1788614413/breadcrumbsExpect compile-packageBin compile-update compile-compile test-packageBin test-update test-compile projectDescriptors
+> breadcrumbsClear
+> obf--1788614413/test
+> obf--619038209/breadcrumbsExpect
+> obf-518286142/breadcrumbsExpect compile-packageBin compile-update compile-compile projectDescriptors
+> obf--1788614413/breadcrumbsExpect compile-packageBin compile-update compile-compile test-packageBin test-update test-compile projectDescriptors
+> breadcrumbsClear
+
+# introduce a breaking change, everything in the chain should recompile
+> obf--619038209/compile
+> obf--619038209/breakingChange
+> obf--1788614413/packageBin
+> obf--619038209/breadcrumbsExpect compile-packageBin compile-update compile-compile projectDescriptors
+> obf-518286142/breadcrumbsExpect compile-packageBin compile-update compile-compile projectDescriptors
+> obf--1788614413/breadcrumbsExpect compile-packageBin compile-update compile-compile projectDescriptors
+> breadcrumbsClear

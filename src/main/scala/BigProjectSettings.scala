@@ -27,26 +27,17 @@ object BigProjectKeys {
   )
 
   /**
-   * NOT IMPLEMENTED YET
+   * Teams that use Eclipse often put tests in separate packages.
    *
    * WORKAROUND: https://bugs.eclipse.org/bugs/show_bug.cgi?id=224708
-   *
-   * Teams that use Eclipse often put tests in separate packages.
    */
-  val eclipseTestsFor = SettingKey[Option[ProjectReference]](
+  val eclipseTestsFor = SettingKey[ProjectReference](
     "eclipseTestsFor",
     "When defined, points to the project that this project is testing."
   )
 
 }
 
-/*
- * All references to `.value` in a Task mean that the task is
- * aggressively invoked as a dependency to this task. Lazily call
- * dependent tasks from Dynamic Tasks:
- *
- *   http://www.scala-sbt.org/0.13/docs/Tasks.html
- */
 object BigProjectSettings extends Plugin {
   import BigProjectKeys._
 
@@ -55,13 +46,17 @@ object BigProjectSettings extends Plugin {
    * off-graph to dynamically get the ivyConfigurations for the
    * project.
    */
-  private def deleteAllPackageBins(structure: BuildStructure, log: Logger, p: ProjectRef): Unit =
+  private def deleteAllPackageBins(structure: BuildStructure, log: Logger, proj: ProjectRef): Unit = {
+    val mainProj = ((eclipseTestsFor in proj) get structure.data)
+    val projs = proj +: mainProj.toSeq
     for {
+      p <- projs
       configs <- (ivyConfigurations in p) get structure.data
       config <- configs
       /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
       if jar.exists()
     } deleteLockedFile(log, jar)
+  }
 
   /**
    * Try our best to delete a file that may be referenced by a stale
@@ -90,6 +85,11 @@ object BigProjectSettings extends Plugin {
    */
   private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
     deleteLockedFile(s.log, jar)
+  }
+
+  private def deleteAllPackageBinTask = (thisProjectRef, state).map { (proj, s) =>
+    val structure = Project.extract(s).structure
+    deleteAllPackageBins(structure, s.log, proj)
   }
 
   // WORKAROUND https://github.com/sbt/sbt/issues/2417
@@ -271,8 +271,7 @@ object BigProjectSettings extends Plugin {
           runMain <<= runMain dependsOn deletePackageBinTask
         ) ++ {
             if (config == Test || config.extendsConfigs.contains(Test)) Seq(
-              // assumes we don't have any other cross-config dependencies
-              test <<= test dependsOn ((compile in Compile), deletePackageBinTask)
+              test <<= test dependsOn deleteAllPackageBinTask
             )
             else Nil
           }
