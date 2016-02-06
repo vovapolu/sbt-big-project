@@ -8,6 +8,7 @@ import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt.Scoped.DefinableTask
 import sbt._
 import Keys._
+import IO._
 import sbt.inc.Analysis
 import sbt.inc.LastModified
 
@@ -27,6 +28,16 @@ object BigProjectKeys {
   )
 
   /**
+   * Detects source / resource changes in the Compile configuration
+   * and treats their project as breaking changes. Ideal after merging
+   * or rebasing to (hopefully) minimise your compile.
+   */
+  val breakOnChanges = TaskKey[Unit](
+    "breakOnChanges",
+    "Run breakingChange if sources / resources are more recent than their jar."
+  )
+
+  /**
    * Teams that use Eclipse often put tests in separate packages.
    *
    * WORKAROUND: https://bugs.eclipse.org/bugs/show_bug.cgi?id=224708
@@ -35,28 +46,24 @@ object BigProjectKeys {
     "eclipseTestsFor",
     "When defined, points to the project that this project is testing."
   )
-
 }
 
 object BigProjectSettings extends Plugin {
   import BigProjectKeys._
 
   /**
-   * Delete all the package bins for the given project. Requires going
-   * off-graph to dynamically get the ivyConfigurations for the
+   * All the existing jars associated to a project, including the
+   * transient dependency jars if this is an Eclipse-style test
    * project.
    */
-  private def deleteAllPackageBins(structure: BuildStructure, log: Logger, proj: ProjectRef): Unit = {
-    val mainProj = ((eclipseTestsFor in proj) get structure.data)
-    val projs = proj +: mainProj.toSeq
+  private def allPackageBins(structure: BuildStructure, log: Logger, proj: ProjectRef): Seq[File] =
     for {
-      p <- projs
-      configs <- (ivyConfigurations in p) get structure.data
+      p <- proj +: ((eclipseTestsFor in proj) get structure.data).toSeq
+      configs <- ((ivyConfigurations in p) get structure.data).toSeq
       config <- configs
       /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
       if jar.exists()
-    } deleteLockedFile(log, jar)
-  }
+    } yield jar
 
   /**
    * Try our best to delete a file that may be referenced by a stale
@@ -87,9 +94,15 @@ object BigProjectSettings extends Plugin {
     deleteLockedFile(s.log, jar)
   }
 
+  /**
+   * Similar to deletePackageBinTask but works for all configurations
+   * of the current project.
+   */
   private def deleteAllPackageBinTask = (thisProjectRef, state).map { (proj, s) =>
     val structure = Project.extract(s).structure
-    deleteAllPackageBins(structure, s.log, proj)
+    allPackageBins(structure, s.log, proj).foreach { jar =>
+      deleteLockedFile(s.log, jar)
+    }
   }
 
   // WORKAROUND https://github.com/sbt/sbt/issues/2417
@@ -239,15 +252,54 @@ object BigProjectSettings extends Plugin {
     deeper(proj).map { resolved => refs(resolved.id) }
   }
 
+  // FIXME: change proj to be ProjectRef
+  private def downstreamAndSelfJars(structure: BuildStructure, log: Logger, proj: ResolvedProject): Seq[File] = {
+    val downstream = dependents(structure, proj).toSeq
+    val current = structure.allProjectRefs.find(_.project == proj.id)
+    for {
+      p <- (downstream ++ current)
+      jar <- allPackageBins(structure, log, p)
+    } yield jar
+  }
+
   /**
    * Deletes all the packageBins of dependent projects.
    */
   def breakingChangeTask: Def.Initialize[Task[Unit]] =
     (state, thisProject).map { (s, proj) =>
       val structure = Project.extract(s).structure
-      val downstream = dependents(structure, proj).toSeq
-      val current = structure.allProjectRefs.find(_.project == proj.id)
-      (downstream ++ current).foreach { p => deleteAllPackageBins(structure, s.log, p) }
+      downstreamAndSelfJars(structure, s.log, proj).foreach { jar =>
+        deleteLockedFile(s.log, jar)
+      }
+    }
+
+  /**
+   * Deletes all dependent jars if any inputs are more recent than the
+   * oldest output.
+   */
+  def breakOnChangesTask: Def.Initialize[Task[Unit]] =
+    (state, thisProject, sourceDirectories in Compile, resourceDirectories in Compile).map { (s, proj, srcs, ress) =>
+      // note, we do not use `sources' or `resources' because they can
+      // have transient dependencies on compile.
+      val structure = Project.extract(s).structure
+
+      // wasteful that we do this many times when aggregating
+      val jars = downstreamAndSelfJars(structure, s.log, proj)
+
+      // this is the expensive bit, we do it exactly as much as we need
+      if (jars.nonEmpty) {
+        val oldest = jars.map(_.lastModified()).min
+        val inputs = for {
+          dir <- (srcs ++ ress)
+          input <- (dir ** "*").filter(_.isFile).get
+        } yield input
+
+        inputs.find(_.lastModified() > oldest).foreach { _ =>
+          for {
+            jar <- jars
+          } deleteLockedFile(s.log, jar)
+        }
+      }
     }
 
   /**
@@ -261,7 +313,8 @@ object BigProjectSettings extends Plugin {
     trackInternalDependencies := TrackLevel.TrackIfMissing,
     transitiveUpdate <<= dynamicTransitiveUpdateTask,
     projectDescriptors <<= dynamicProjectDescriptorsTask,
-    breakingChange <<= breakingChangeTask
+    breakingChange <<= breakingChangeTask,
+    breakOnChanges <<= breakOnChangesTask
   ) ++ configs.flatMap { config =>
       inConfig(config)(
         Seq(

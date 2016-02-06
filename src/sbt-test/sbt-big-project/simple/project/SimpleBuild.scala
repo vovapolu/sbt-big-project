@@ -37,4 +37,7 @@ object SimpleBuild extends Build {
     BigProjectKeys.eclipseTestsFor := c
   )
 
+  val root = Project("root", file(".")) aggregate (a, b, c, d, e) settings (
+    BigProjectSettings.overrideProjectSettings(Compile, Test)
+  )
 }
