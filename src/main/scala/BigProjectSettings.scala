@@ -246,7 +246,8 @@ object BigProjectSettings extends Plugin {
     (state, thisProject).map { (s, proj) =>
       val structure = Project.extract(s).structure
       val downstream = dependents(structure, proj).toSeq
-      downstream.foreach { p => deleteAllPackageBins(structure, s.log, p) }
+      val current = structure.allProjectRefs.find(_.project == proj.id)
+      (downstream ++ current).foreach { p => deleteAllPackageBins(structure, s.log, p) }
     }
 
   /**

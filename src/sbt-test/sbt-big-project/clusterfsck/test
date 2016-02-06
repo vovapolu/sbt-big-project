@@ -42,7 +42,6 @@
 > breadcrumbsClear
 
 # introduce a breaking change, everything in the chain should recompile
-> obf--619038209/compile
 > obf--619038209/breakingChange
 > obf--1788614413/packageBin
 > obf--619038209/breadcrumbsExpect compile-packageBin compile-update compile-compile projectDescriptors
