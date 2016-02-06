@@ -227,7 +227,7 @@ object BigProjectSettings extends Plugin {
    * Returns the exhaustive set of projects that depend on the given one
    * (not including itself).
    */
-  private[fommil] def dependents(structure: BuildStructure, proj: ResolvedProject): Set[ProjectRef] = {
+  private[fommil] def dependents(structure: BuildStructure, thisProj: ProjectRef): Seq[ProjectRef] = {
     val dependents = {
       for {
         proj <- structure.allProjects
@@ -249,15 +249,14 @@ object BigProjectSettings extends Plugin {
     val refs: Map[String, ProjectRef] = structure.allProjectRefs.map { ref =>
       (ref.project, ref)
     }.toMap
-    deeper(proj).map { resolved => refs(resolved.id) }
+    val proj = Project.getProject(thisProj, structure).get
+    deeper(proj).map { resolved => refs(resolved.id) }(collection.breakOut)
   }
 
-  // FIXME: change proj to be ProjectRef
-  private def downstreamAndSelfJars(structure: BuildStructure, log: Logger, proj: ResolvedProject): Seq[File] = {
+  private def downstreamAndSelfJars(structure: BuildStructure, log: Logger, proj: ProjectRef): Seq[File] = {
     val downstream = dependents(structure, proj).toSeq
-    val current = structure.allProjectRefs.find(_.project == proj.id)
     for {
-      p <- (downstream ++ current)
+      p <- (downstream :+ proj)
       jar <- allPackageBins(structure, log, p)
     } yield jar
   }
@@ -266,7 +265,7 @@ object BigProjectSettings extends Plugin {
    * Deletes all the packageBins of dependent projects.
    */
   def breakingChangeTask: Def.Initialize[Task[Unit]] =
-    (state, thisProject).map { (s, proj) =>
+    (state, thisProjectRef).map { (s, proj) =>
       val structure = Project.extract(s).structure
       downstreamAndSelfJars(structure, s.log, proj).foreach { jar =>
         deleteLockedFile(s.log, jar)
@@ -278,7 +277,7 @@ object BigProjectSettings extends Plugin {
    * oldest output.
    */
   def breakOnChangesTask: Def.Initialize[Task[Unit]] =
-    (state, thisProject, sourceDirectories in Compile, resourceDirectories in Compile).map { (s, proj, srcs, ress) =>
+    (state, thisProjectRef, sourceDirectories in Compile, resourceDirectories in Compile).map { (s, proj, srcs, ress) =>
       // note, we do not use `sources' or `resources' because they can
       // have transient dependencies on compile.
       val structure = Project.extract(s).structure

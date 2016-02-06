@@ -218,7 +218,6 @@ $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ exists d/target/scala-2.10/d_2.10-v1.jar
 $ exists e/target/scala-2.10/e_2.10-v1.jar
 $ exists e/target/scala-2.10/e_2.10-v1-tests.jar
-> debug
 > breakOnChanges
 $ exists a/target/scala-2.10/a_2.10-v1.jar
 $ exists b/target/scala-2.10/b_2.10-v1.jar
