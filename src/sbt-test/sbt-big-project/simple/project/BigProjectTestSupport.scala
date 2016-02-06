@@ -67,9 +67,10 @@ object BigProjectTestSupport {
         )
     },
     dependentsExpect := {
-      val proj = thisProject.value
       val expect = parser.parsed.toSet
-      val got = BigProjectSettings.dependents(state.value, proj).map(_.project)
+      val proj = thisProject.value
+      val structure = Project.extract(state.value).structure
+      val got = BigProjectSettings.dependents(structure, proj).map(_.project)
       if (expect != got)
         throw new MessageOnlyException(
           s"expected ${expect.size} dependents for ${proj.id} but got ${got.size}: $got"

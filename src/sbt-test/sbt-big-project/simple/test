@@ -155,3 +155,28 @@ $ absent d/target/scala-2.10/d_2.10-v1.jar
 > d/runMain d.Foo
 > d/runMain d.Foo
 > d/runMain d.Foo
+> breadcrumbsClear
+
+# Test configurations should always recompile their Compile configuration
+> debug
+> c/test
+$ exists c/target/scala-2.10/c_2.10-v1.jar
+$ exists c/target/scala-2.10/c_2.10-v1-tests.jar
+$ touch timestamp
+$ sleep 1000
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
+> d/breadcrumbsExpect
+> breadcrumbsClear
+# once again, without caches...
+> c/test
+$ exists c/target/scala-2.10/c_2.10-v1.jar
+$ exists c/target/scala-2.10/c_2.10-v1-tests.jar
+$ newer c/target/scala-2.10/c_2.10-v1.jar timestamp
+$ newer c/target/scala-2.10/c_2.10-v1-tests.jar timestamp
+> a/breadcrumbsExpect
+> b/breadcrumbsExpect
+> c/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
+> d/breadcrumbsExpect
+> breadcrumbsClear

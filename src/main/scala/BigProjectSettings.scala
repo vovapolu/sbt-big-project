@@ -51,24 +51,45 @@ object BigProjectSettings extends Plugin {
   import BigProjectKeys._
 
   /**
-   * TrackLevel.TrackIfMissing will not invalidate or rebuild jar
-   * files if the user explicitly recompiles a project. We delete the
-   * packageBin associated to a project when compiling that project so
-   * that we never have stale jars.
+   * Delete all the package bins for the given project. Requires going
+   * off-graph to dynamically get the ivyConfigurations for the
+   * project.
    */
-  private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
-    s.log.debug(s"Deleting $jar")
+  private def deleteAllPackageBins(structure: BuildStructure, log: Logger, p: ProjectRef): Unit =
+    for {
+      configs <- (ivyConfigurations in p) get structure.data
+      config <- configs
+      /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
+      if jar.exists()
+    } deleteLockedFile(log, jar)
+
+  /**
+   * Try our best to delete a file that may be referenced by a stale
+   * scala-compiler file handle (affects Windows).
+   */
+  private def deleteLockedFile(log: Logger, file: File): Unit = {
+    log.debug(s"Deleting $file")
     def delete(attempt: Int = 0): Unit =
-      if (attempt < 5 && jar.exists && !jar.delete()) {
-        s.log.warn(s"Failed to delete $jar (attempt $attempt), see https://issues.scala-lang.org/browse/SI-9632")
+      if (attempt < 5 && file.exists && !file.delete()) {
+        log.warn(s"Failed to delete $file (attempt $attempt), see https://issues.scala-lang.org/browse/SI-9632")
         System.gc()
         System.runFinalization()
         System.gc()
         delete(attempt + 1)
       }
     delete()
-    if (jar.exists())
-      s.log.error(s"Failed to delete $jar")
+    if (file.exists())
+      log.error(s"Failed to delete $file")
+  }
+
+  /**
+   * TrackLevel.TrackIfMissing will not invalidate or rebuild jar
+   * files if the user explicitly recompiles a project. We delete the
+   * packageBin associated to a project when compiling that project so
+   * that we never have stale jars.
+   */
+  private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
+    deleteLockedFile(s.log, jar)
   }
 
   // WORKAROUND https://github.com/sbt/sbt/issues/2417
@@ -193,11 +214,7 @@ object BigProjectSettings extends Plugin {
    * Returns the exhaustive set of projects that depend on the given one
    * (not including itself).
    */
-  private[fommil] def dependents(state: State, proj: ResolvedProject): Set[ProjectRef] = {
-    val extracted = Project.extract(state)
-    val structure = extracted.structure
-
-    // builds the full dependents tree
+  private[fommil] def dependents(structure: BuildStructure, proj: ResolvedProject): Set[ProjectRef] = {
     val dependents = {
       for {
         proj <- structure.allProjects
@@ -215,10 +232,10 @@ object BigProjectSettings extends Plugin {
       deps ++ deps.flatMap(deeper)
     }
 
+    // optimised projectRef lookup
     val refs: Map[String, ProjectRef] = structure.allProjectRefs.map { ref =>
       (ref.project, ref)
     }.toMap
-
     deeper(proj).map { resolved => refs(resolved.id) }
   }
 
@@ -227,21 +244,9 @@ object BigProjectSettings extends Plugin {
    */
   def breakingChangeTask: Def.Initialize[Task[Unit]] =
     (state, thisProject).map { (s, proj) =>
-      val downstream = dependents(s, proj).toSeq
-
-      // Eugene and Josh are going to yell at me...
-      // manually invoke some settings off-graph
       val structure = Project.extract(s).structure
-      for {
-        p <- downstream
-        configs <- (ivyConfigurations in p) get structure.data
-        config <- configs
-        /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
-        if jar.exists()
-      } {
-        s.log.info(s"Deleting $jar")
-        jar.delete()
-      }
+      val downstream = dependents(structure, proj).toSeq
+      downstream.foreach { p => deleteAllPackageBins(structure, s.log, p) }
     }
 
   /**
@@ -264,7 +269,13 @@ object BigProjectSettings extends Plugin {
           exportedProducts <<= dynamicExportedProductsTask,
           compile <<= compile dependsOn deletePackageBinTask,
           runMain <<= runMain dependsOn deletePackageBinTask
-        )
+        ) ++ {
+            if (config == Test || config.extendsConfigs.contains(Test)) Seq(
+              // assumes we don't have any other cross-config dependencies
+              test <<= test dependsOn ((compile in Compile), deletePackageBinTask)
+            )
+            else Nil
+          }
       )
     }
 
