@@ -30,6 +30,8 @@ Some customisations are made available in the `BigProjectKeys` object, such as s
 
 The biggest workflow change that `sbt-big-project` introduces is that it forces all projects to compile to jar, instead of just class directories, and **sbt will treat each project independently**. If a jar exists for a `Project`, sbt will treat it as a library dependency and will not perform incremental compilation on that project unless explicitly requested.
 
+If your site makes snapshot jars available from CI jobs, you can customise your sbt build to download and copy those jars into their expected place, entirely avoiding the need to compile many projects on your desktop.
+
 Let us consider the example project above, consisting of three `Project`s: `a`, `b` and `c`. If you make source code changes within `a`, and type `a/compile` then the next time you run your app or tests in `c`, then `b` will not be recompiled.
 
 ## `proj/breakingChange`
