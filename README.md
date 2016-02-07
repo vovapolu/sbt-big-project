@@ -10,9 +10,9 @@ The biggest workflow change that `sbt-big-project` introduces is that it forces 
 
 If your site makes snapshot jars available from CI jobs, you can customise your sbt build to download and copy those jars into their expected place, entirely avoiding the need to compile many projects on your desktop.
 
-Let us consider the example project above, consisting of three `Project`s: `a`, `b` and `c`. If you make source code changes within `a`, and type `a/compile` then the next time you run your app or tests in `c`, then `b` will not be recompiled.
+Let us consider a trivial example, consisting of three `Project`s: `a`, `b` and `c`, with `c` depending on `b` which depends on `a`. If you make source code changes within `a`, and type `a/compile` then the next time you run your app or tests in `c`, then `b` will not be recompiled.
 
-## `proj/breakingChange`
+## `a/breakingChange`
 
 If you knowingly make breaking ABI changes to `a`, you should tell sbt by typing `a/breakingChange` which will flag all dependents of `a` as requiring a full recompile.
 
