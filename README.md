@@ -20,7 +20,7 @@ If you knowingly make breaking ABI changes to `a`, you should tell sbt by typing
 
 There is a convenient global task, `breakOnChanges`, which will scan for changes to your source and resource files and automatically declare all the changes to be breaking.
 
-This can be adopted as part of your workflow if you rebase your source code and wish to minimise the number of `Project`s that you recompile, whilst remaining completely safe from ABI changes that your colleagues may have introduced. (Of course, if the rebase changes core libraries, you will still incur a full recompile).
+This can be adopted as part of your workflow if you cherry pick or merge a colleague's work and wish to minimise the number of `Project`s that you recompile, whilst remaining completely safe from ABI changes that your colleagues may have introduced. (Of course, if the rebase changes core libraries, you will still incur a full recompile).
 
 # Install
 
