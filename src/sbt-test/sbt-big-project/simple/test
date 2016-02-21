@@ -20,6 +20,10 @@ $ exists a/target/scala-2.10/a_2.10-v1.jar
 $ exists b/target/scala-2.10/b_2.10-v1.jar
 $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ absent d/target/scala-2.10/d_2.10-v1.jar
+$ exists a/target/scala-2.10/last/a_2.10-v1.jar
+$ exists b/target/scala-2.10/last/b_2.10-v1.jar
+$ exists c/target/scala-2.10/last/c_2.10-v1.jar
+$ absent d/target/scala-2.10/last/d_2.10-v1.jar
 > breadcrumbsClear
 
 # check that another d/compile doesn't invoke a/compile:compile, b/compile:compile or c/compile:compile
@@ -68,6 +72,10 @@ $ exists b/target/scala-2.10/b_2.10-v1.jar
 > b/breadcrumbsExpect compile-update compile-compile projectDescriptors compile-packageBin
 > c/breadcrumbsExpect compile-update projectDescriptors
 > d/breadcrumbsExpect compile-compile compile-update projectDescriptors
+$ exists a/target/scala-2.10/last/a_2.10-v1.jar
+$ exists b/target/scala-2.10/last/b_2.10-v1.jar
+$ exists c/target/scala-2.10/last/c_2.10-v1.jar
+$ absent d/target/scala-2.10/last/d_2.10-v1.jar
 > breadcrumbsClear
 
 # delete b's classes, d/compile should not recompile b
@@ -126,6 +134,10 @@ $ exists a/target/scala-2.10/a_2.10-v1.jar
 $ absent b/target/scala-2.10/b_2.10-v1.jar
 $ absent c/target/scala-2.10/c_2.10-v1.jar
 $ absent d/target/scala-2.10/d_2.10-v1.jar
+$ exists a/target/scala-2.10/last/a_2.10-v1.jar
+$ exists b/target/scala-2.10/last/b_2.10-v1.jar
+$ exists c/target/scala-2.10/last/c_2.10-v1.jar
+$ exists d/target/scala-2.10/last/d_2.10-v1.jar
 > breadcrumbsClear
 
 # check that runMain will build the packageBin
@@ -207,6 +219,12 @@ $ newer e/target/scala-2.10/e_2.10-v1-tests.jar timestamp
 > c/breadcrumbsExpect compile-packageBin projectDescriptors compile-compile compile-update
 > d/breadcrumbsExpect
 > e/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
+$ exists a/target/scala-2.10/last/a_2.10-v1.jar
+$ exists b/target/scala-2.10/last/b_2.10-v1.jar
+$ exists c/target/scala-2.10/last/c_2.10-v1.jar
+$ exists d/target/scala-2.10/last/d_2.10-v1.jar
+$ exists e/target/scala-2.10/last/e_2.10-v1.jar
+$ exists e/target/scala-2.10/last/e_2.10-v1-tests.jar
 > breadcrumbsClear
 
 # scan for breaking changes
@@ -234,4 +252,10 @@ $ absent c/target/scala-2.10/c_2.10-v1.jar
 $ absent d/target/scala-2.10/d_2.10-v1.jar
 $ absent e/target/scala-2.10/e_2.10-v1.jar
 $ absent e/target/scala-2.10/e_2.10-v1-tests.jar
+$ exists a/target/scala-2.10/last/a_2.10-v1.jar
+$ exists b/target/scala-2.10/last/b_2.10-v1.jar
+$ exists c/target/scala-2.10/last/c_2.10-v1.jar
+$ exists d/target/scala-2.10/last/d_2.10-v1.jar
+$ exists e/target/scala-2.10/last/e_2.10-v1.jar
+$ exists e/target/scala-2.10/last/e_2.10-v1-tests.jar
 > breadcrumbsClear

@@ -2,6 +2,7 @@
 // Licence: Apache-2.0
 package fommil
 
+import java.nio.file.{Files, Paths}
 import java.util.concurrent.ConcurrentHashMap
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
@@ -11,6 +12,7 @@ import Keys._
 import IO._
 import sbt.inc.Analysis
 import sbt.inc.LastModified
+import scala.util.Try
 
 /**
  * Publicly exposed keys for settings and tasks that the user may wish
@@ -46,6 +48,24 @@ object BigProjectKeys {
     "eclipseTestsFor",
     "When defined, points to the project that this project is testing."
   )
+
+  /**
+   * A version of the last compilable jar is made available, so that
+   * developer tools always have some reference to use for indexing
+   * purposes. Recall that packageBin is deleted before each compile.
+   *
+   * Windows users may still experience stale jars as a result of
+   * SI-9632 and similar bugs in tooling.
+   *
+   * Enabled by default, set to None to disable (e.g. to marginally
+   * speed up CI compiles and save disk space).
+   *
+   * ENSIME use: `EnsimeKeys.useTarget := BigProjectKeys.lastCompilableJar`
+   */
+  val lastCompilableJar = TaskKey[Option[File]](
+    "lastCompilableJar",
+    "Points to a copy of packageBin that is updated when the packageBin is recreated."
+  )
 }
 
 object BigProjectSettings extends Plugin {
@@ -69,19 +89,23 @@ object BigProjectSettings extends Plugin {
    * Try our best to delete a file that may be referenced by a stale
    * scala-compiler file handle (affects Windows).
    */
-  private def deleteLockedFile(log: Logger, file: File): Unit = {
+  private def deleteLockedFile(log: Logger, file: File): Boolean = {
     log.debug(s"Deleting $file")
+    val path = file.toPath
     def delete(attempt: Int = 0): Unit =
-      if (attempt < 5 && file.exists && !file.delete()) {
+      if (attempt < 5 && Files.exists(path) && !file.delete()) {
         log.warn(s"Failed to delete $file (attempt $attempt), see https://issues.scala-lang.org/browse/SI-9632")
         System.gc()
         System.runFinalization()
         System.gc()
+        Try(Files.delete(path))
         delete(attempt + 1)
       }
     delete()
-    if (file.exists())
+    if (file.exists()) {
       log.error(s"Failed to delete $file")
+      false
+    } else true
   }
 
   /**
@@ -92,6 +116,13 @@ object BigProjectSettings extends Plugin {
    */
   private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
     deleteLockedFile(s.log, jar)
+  }
+
+  /**
+   * The location of the packageBin, but under a subfolder named "last".
+   */
+  private def lastCompilableJarTask = (artifactPath in packageBin).map { jar =>
+    Option(jar.getParentFile / "last" / jar.getName)
   }
 
   /**
@@ -131,15 +162,28 @@ object BigProjectSettings extends Plugin {
    *
    * We use the file's existence as the cache.
    */
-  private def dynamicPackageBinTask: Def.Initialize[Task[File]] =
-    ((artifactPath in packageBin), (streams in packageBin).theTask, (packageConfiguration in packageBin).theTask).flatMap {
-      (jar, streamsTask, configTask) =>
-        if (jar.exists()) task(jar)
-        else (streamsTask, configTask).map {
-          case (s, c) =>
-            Package(c, s.cacheDirectory, s.log)
-            jar
+  private def dynamicPackageBinTask: Def.Initialize[Task[File]] = (
+    (artifactPath in packageBin),
+    lastCompilableJar,
+    (streams in packageBin),
+    (packageConfiguration in packageBin).theTask
+  ).flatMap { (jar, lastOpt, s, configTask) =>
+      def createOrUpdateLast(): Unit = lastOpt.foreach { last =>
+        if (jar.exists() && jar.lastModified != last.lastModified) {
+          s.log.info(s"backing up $jar to $last")
+          deleteLockedFile(s.log, last)
+          IO.copyFile(jar, last, preserveLastModified = true)
         }
+      }
+
+      if (jar.exists()) {
+        createOrUpdateLast()
+        task(jar)
+      } else configTask.map { c =>
+        Package(c, s.cacheDirectory, s.log)
+        createOrUpdateLast()
+        jar
+      }
     }
 
   /**
@@ -317,6 +361,7 @@ object BigProjectSettings extends Plugin {
   ) ++ configs.flatMap { config =>
       inConfig(config)(
         Seq(
+          lastCompilableJar <<= lastCompilableJarTask,
           packageBin <<= dynamicPackageBinTask,
           dependencyClasspath <<= dynamicDependencyClasspathTask,
           exportedProducts <<= dynamicExportedProductsTask,
