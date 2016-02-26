@@ -60,7 +60,15 @@ object BigProjectKeys {
    * Enabled by default, set to None to disable (e.g. to marginally
    * speed up CI compiles and save disk space).
    *
-   * ENSIME use: `EnsimeKeys.useTarget := BigProjectKeys.lastCompilableJar`
+   * ENSIME use:
+   *
+   * {{{
+   * val ensimeLastCompilableJarTask: Def.Initialize[Task[Option[File]]] =
+   *   (state, (artifactPath in packageBin), BigProjectKeys.lastCompilableJar).map { (s, jar, lastOpt) =>
+   *     BigProjectSettings.createOrUpdateLast(s.log, jar, lastOpt.get)
+   *     lastOpt
+   *   }
+   * }}}
    */
   val lastCompilableJar = TaskKey[Option[File]](
     "lastCompilableJar",
@@ -168,23 +176,23 @@ object BigProjectSettings extends Plugin {
     (streams in packageBin),
     (packageConfiguration in packageBin).theTask
   ).flatMap { (jar, lastOpt, s, configTask) =>
-      def createOrUpdateLast(): Unit = lastOpt.foreach { last =>
-        if (jar.exists() && jar.lastModified != last.lastModified) {
-          s.log.info(s"backing up $jar to $last")
-          deleteLockedFile(s.log, last)
-          IO.copyFile(jar, last, preserveLastModified = true)
-        }
-      }
-
       if (jar.exists()) {
-        createOrUpdateLast()
+        lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
         task(jar)
       } else configTask.map { c =>
         Package(c, s.cacheDirectory, s.log)
-        createOrUpdateLast()
+        lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
         jar
       }
     }
+
+  def createOrUpdateLast(log: Logger, jar: File, last: File): Unit =
+    if (jar.exists() && jar.lastModified != last.lastModified) {
+      log.info(s"backing up $jar to $last")
+      deleteLockedFile(log, last)
+      IO.copyFile(jar, last, preserveLastModified = true)
+    }
+
 
   /**
    * transitiveUpdate causes traversals of dependency projects
@@ -377,3 +385,4 @@ object BigProjectSettings extends Plugin {
     }
 
 }
+
