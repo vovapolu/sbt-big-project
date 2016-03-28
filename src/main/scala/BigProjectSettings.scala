@@ -422,12 +422,8 @@ object ClassLoaderHack {
    */
   def release(cl: ClassLoader, log: Logger): Unit = {
     cl match {
+      case null =>
       case u: java.net.URLClassLoader =>
-        val closeablesField = classOf[java.net.URLClassLoader].getDeclaredField("closeables")
-
-        closeablesField.setAccessible(true)
-        val closeables = closeablesField.get(u).asInstanceOf[java.util.WeakHashMap[java.io.Closeable, Void]]
-
         // simply calling `URLClassLoader.close()` will leave the
         // classloader in an unusable state and we cannot guarantee
         // that others are not accessing it concurrently.
@@ -435,6 +431,9 @@ object ClassLoaderHack {
         // It is not completely clear if these closeable objects are
         // actually causing a problem. The main problem is the
         // URLClassPath.JarLoader, which we address next.
+        val closeablesField = classOf[java.net.URLClassLoader].getDeclaredField("closeables")
+        closeablesField.setAccessible(true)
+        val closeables = closeablesField.get(u).asInstanceOf[java.util.WeakHashMap[java.io.Closeable, Void]]
         closeables synchronized {
           val it = closeables.keySet().iterator()
           while (it.hasNext()) {
@@ -472,8 +471,7 @@ object ClassLoaderHack {
         val parentField = classOf[java.lang.ClassLoader].getDeclaredField("parent")
         parentField.setAccessible(true)
         val parent = parentField.get(u).asInstanceOf[ClassLoader]
-        if (parent != null)
-          release(parent, log)
+        release(parent, log)
 
       case f: sbt.classpath.ClasspathFilter =>
         val parentField = classOf[sbt.classpath.ClasspathFilter].getDeclaredField("parent")
