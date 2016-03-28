@@ -1,0 +1,18 @@
+# this test is only relevant on Windows
+# where stale references to the jars will
+# block file deletion of the jars.
+# https://github.com/sbt/sbt/issues/2496
+> definedTests
+$ exists target/scala-2.10/test-discovery_2.10-v1.jar
+$ exists target/scala-2.10/test-discovery_2.10-v1-tests.jar
+$ delete target/scala-2.10/test-discovery_2.10-v1.jar
+$ delete target/scala-2.10/test-discovery_2.10-v1-tests.jar
+$ absent target/scala-2.10/test-discovery_2.10-v1.jar
+$ absent target/scala-2.10/test-discovery_2.10-v1-tests.jar
+> test
+$ exists target/scala-2.10/test-discovery_2.10-v1.jar
+$ exists target/scala-2.10/test-discovery_2.10-v1-tests.jar
+$ delete target/scala-2.10/test-discovery_2.10-v1.jar
+$ delete target/scala-2.10/test-discovery_2.10-v1-tests.jar
+$ absent target/scala-2.10/test-discovery_2.10-v1.jar
+$ absent target/scala-2.10/test-discovery_2.10-v1-tests.jar

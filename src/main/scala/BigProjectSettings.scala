@@ -1,5 +1,5 @@
 // Copyright (C) 2015 - 2016 Sam Halliday
-// Licence: Apache-2.0
+// Licence: http://www.apache.org/licenses/LICENSE-2.0
 package fommil
 
 import java.nio.file.{Files, Paths}
@@ -99,17 +99,13 @@ object BigProjectSettings extends Plugin {
    */
   private def deleteLockedFile(log: Logger, file: File): Boolean = {
     log.debug(s"Deleting $file")
-    val path = file.toPath
-    def delete(attempt: Int = 0): Unit =
-      if (attempt < 5 && Files.exists(path) && !file.delete()) {
-        log.warn(s"Failed to delete $file (attempt $attempt), see https://issues.scala-lang.org/browse/SI-9632")
-        System.gc()
-        System.runFinalization()
-        System.gc()
-        Try(Files.delete(path))
-        delete(attempt + 1)
-      }
-    delete()
+    if (file.exists() && !file.delete()) {
+      log.debug(s"Failed to delete $file")
+      System.gc()
+      System.runFinalization()
+      System.gc()
+      file.delete()
+    }
     if (file.exists()) {
       log.error(s"Failed to delete $file")
       false
@@ -192,7 +188,6 @@ object BigProjectSettings extends Plugin {
       deleteLockedFile(log, last)
       IO.copyFile(jar, last, preserveLastModified = true)
     }
-
 
   /**
    * transitiveUpdate causes traversals of dependency projects
@@ -360,7 +355,7 @@ object BigProjectSettings extends Plugin {
    */
   def overrideProjectSettings(configs: Configuration*): Seq[Setting[_]] = Seq(
     exportJars := true,
-    forcegc in Global := true, // workaround SI-9632
+    forcegc in Global := true, // WORKAROUND https://github.com/sbt/sbt/issues/1223 (MOSTLY USELESS)
     trackInternalDependencies := TrackLevel.TrackIfMissing,
     transitiveUpdate <<= dynamicTransitiveUpdateTask,
     projectDescriptors <<= dynamicProjectDescriptorsTask,
@@ -377,7 +372,15 @@ object BigProjectSettings extends Plugin {
           runMain <<= runMain dependsOn deletePackageBinTask
         ) ++ {
             if (config == Test || config.extendsConfigs.contains(Test)) Seq(
-              test <<= test dependsOn deleteAllPackageBinTask
+              test <<= test dependsOn deleteAllPackageBinTask,
+              definedTests <<= (definedTests, testLoader, state).map { (orig, loader, s) =>
+                ClassLoaderHack.release(loader, s.log)
+                orig
+              },
+              executeTests <<= (executeTests, testLoader, state).map { (orig, loader, s) =>
+                ClassLoaderHack.release(loader, s.log)
+                orig
+              }
             )
             else Nil
           }
@@ -386,3 +389,121 @@ object BigProjectSettings extends Plugin {
 
 }
 
+/**
+ * WORKAROUND https://github.com/sbt/sbt/issues/2496
+ *
+ * Could also be used to workaround:
+ *
+ * - https://issues.scala-lang.org/browse/SI-9632
+ * - https://issues.scala-lang.org/browse/SI-9682
+ * - https://issues.scala-lang.org/browse/SI-9683
+ *
+ * The basic problem is that classloaders will retain `JarFile`
+ * references and not close them until finalisation runs as part of
+ * GC. A basic (and inefficient) workaround is to run GC regularly and
+ * in problematic code as per https://github.com/sbt/sbt/issues/1223
+ *
+ * However, the problem gets *much* worse when running test discovery
+ * (and tests) because, for some inexplicable reason, the JVM loses
+ * the references to the `JarFile`s and can never run their
+ * finalisers, effectively creating immutable jar files on the disk
+ * and turning all subsequent compiles into no-ops (on Windows) and
+ * merely leaking file handlers (on Linux and OS X), eventually
+ * resulting in a kernel error.
+ *
+ * This workaround touches internal JVM implementation details of Java
+ * 7 and may break in Java 8+ AND internal implementation details of
+ * sbt's classloaders. If you're on Java 6, you're basically doomed.
+ */
+object ClassLoaderHack {
+
+  /**
+   * Aggressively release resources of the classloader.
+   */
+  def release(cl: ClassLoader, log: Logger): Unit = {
+    cl match {
+      case u: java.net.URLClassLoader =>
+        val closeablesField = classOf[java.net.URLClassLoader].getDeclaredField("closeables")
+
+        closeablesField.setAccessible(true)
+        val closeables = closeablesField.get(u).asInstanceOf[java.util.WeakHashMap[java.io.Closeable, Void]]
+
+        // simply calling `URLClassLoader.close()` will leave the
+        // classloader in an unusable state and we cannot guarantee
+        // that others are not accessing it concurrently.
+        //
+        // It is not completely clear if these closeable objects are
+        // actually causing a problem. The main problem is the
+        // URLClassPath.JarLoader, which we address next.
+        closeables synchronized {
+          val it = closeables.keySet().iterator()
+          while (it.hasNext()) {
+            val closeable = it.next()
+            closeable.close()
+            it.remove()
+          }
+        }
+
+        // We need to close the URLClassPath.Loaders (specifically the
+        // JarLoaders), yet trick the URLClassPath into being
+        // re-usable. Several ways to do this:
+        //
+        //   1. manually close the Loaders (a private static class)
+        //   2. close the loaders and then reset the classpath's fields
+        //   3. close the classpath and put a new one in the classloader
+        //   4. close the classloader and give it a new classpath
+        //      (temporarily breaks the classloader)
+        //
+        // Some of these options are less thread-safe than others.
+        //
+        // option #3 it is...
+        val urlClassPathField = classOf[java.net.URLClassLoader].getDeclaredField("ucp")
+        urlClassPathField.setAccessible(true)
+        val urlClassPath = urlClassPathField.get(u).asInstanceOf[sun.misc.URLClassPath]
+        val replacementUrlClassPath = new sun.misc.URLClassPath(u.getURLs)
+        urlClassPathField.set(u, replacementUrlClassPath)
+        // fresh, volatile / barrier, calls to the URLClassLoader
+        // should not see the old URLClassPath instance, so close it.
+        // This has the possibility of closing a live classloader, in
+        // which case the only remedy is to re-run the sbt task that
+        // failed (or restart sbt).
+        urlClassPath.closeLoaders()
+
+        val parentField = classOf[java.lang.ClassLoader].getDeclaredField("parent")
+        parentField.setAccessible(true)
+        val parent = parentField.get(u).asInstanceOf[ClassLoader]
+        if (parent != null)
+          release(parent, log)
+
+      case f: sbt.classpath.ClasspathFilter =>
+        val parentField = classOf[sbt.classpath.ClasspathFilter].getDeclaredField("parent")
+        parentField.setAccessible(true)
+        val parent = parentField.get(f).asInstanceOf[ClassLoader]
+
+        val rootField = classOf[sbt.classpath.ClasspathFilter].getDeclaredField("root")
+        rootField.setAccessible(true)
+        val root = rootField.get(f).asInstanceOf[ClassLoader]
+
+        release(parent, log)
+        release(root, log)
+
+      case f: sbt.classpath.DualLoader =>
+        val parentAField = classOf[sbt.classpath.DualLoader].getDeclaredField("parentA")
+        parentAField.setAccessible(true)
+        val parentA = parentAField.get(f).asInstanceOf[ClassLoader]
+
+        val parentBField = classOf[sbt.classpath.DualLoader].getDeclaredField("parentB")
+        parentBField.setAccessible(true)
+        val parentB = parentBField.get(f).asInstanceOf[ClassLoader]
+
+        release(parentA, log)
+        release(parentB, log)
+
+      // not accessible
+      // case f: xsbt.boot.BootFilteredLoader =>
+
+      case o =>
+        log.debug(s"ClassLoader isn't supported: ${o.getClass}")
+    }
+  }
+}
