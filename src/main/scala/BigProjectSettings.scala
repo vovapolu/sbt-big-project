@@ -348,6 +348,15 @@ object BigProjectSettings extends Plugin {
       }
     }
 
+  // The testLoader is being re-used at various stages of testing,
+  // leading to file handler leaks (not collected by the GC) and locks
+  // all classpath files on Windows, so free it up after we use.
+  // Ideally, sbt would just close the classloader after using it, and
+  // create a fresh one each time.
+  def testLoaderRelease: Def.Initialize[Task[Unit]] = (testLoader, state).map { (cl, s) =>
+    ClassLoaderHack.release(cl, s.log)
+  }
+
   /**
    * We want to be sure that this is the last collection of Settings
    * that runs on each project, so we require that the user manually
@@ -372,19 +381,9 @@ object BigProjectSettings extends Plugin {
           runMain <<= runMain dependsOn deletePackageBinTask
         ) ++ {
             if (config == Test || config.extendsConfigs.contains(Test)) Seq(
-              test <<= test dependsOn deleteAllPackageBinTask,
-              definedTests <<= (definedTests, testLoader, state).map { (orig, loader, s) =>
-                ClassLoaderHack.release(loader, s.log)
-                orig
-              },
-              loadedTestFrameworks <<= (loadedTestFrameworks, testLoader, state).map { (orig, loader, s) =>
-                ClassLoaderHack.release(loader, s.log)
-                orig
-              },
-              executeTests <<= (executeTests, testLoader, state).map { (orig, loader, s) =>
-                ClassLoaderHack.release(loader, s.log)
-                orig
-              }
+              loadedTestFrameworks <<= loadedTestFrameworks andFinally testLoaderRelease,
+              definedTests <<= definedTests andFinally testLoaderRelease,
+              executeTests <<= executeTests dependsOn deleteAllPackageBinTask andFinally testLoaderRelease
             )
             else Nil
           }
