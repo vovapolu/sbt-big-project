@@ -3,6 +3,7 @@
 package fommil
 
 import java.nio.file.{Files, Paths}
+import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
@@ -97,7 +98,7 @@ object BigProjectSettings extends Plugin {
    * Try our best to delete a file that may be referenced by a stale
    * scala-compiler file handle (affects Windows).
    */
-  private def deleteLockedFile(log: Logger, file: File): Boolean = {
+  private def deleteLockedFile(log: Logger, file: File): Unit = {
     log.debug(s"Deleting $file")
     if (file.exists() && !file.delete()) {
       log.debug(s"Failed to delete $file")
@@ -107,9 +108,8 @@ object BigProjectSettings extends Plugin {
       file.delete()
     }
     if (file.exists()) {
-      log.error(s"Failed to delete $file")
-      false
-    } else true
+      throw new IllegalStateException(s"Failed to delete $file")
+    }
   }
 
   /**
@@ -377,6 +377,10 @@ object BigProjectSettings extends Plugin {
                 ClassLoaderHack.release(loader, s.log)
                 orig
               },
+              loadedTestFrameworks <<= (loadedTestFrameworks, testLoader, state).map { (orig, loader, s) =>
+                ClassLoaderHack.release(loader, s.log)
+                orig
+              },
               executeTests <<= (executeTests, testLoader, state).map { (orig, loader, s) =>
                 ClassLoaderHack.release(loader, s.log)
                 orig
@@ -467,6 +471,8 @@ object ClassLoaderHack {
         // which case the only remedy is to re-run the sbt task that
         // failed (or restart sbt).
         urlClassPath.closeLoaders()
+
+        ResourceBundle.clearCache(u)
 
         val parentField = classOf[java.lang.ClassLoader].getDeclaredField("parent")
         parentField.setAccessible(true)
