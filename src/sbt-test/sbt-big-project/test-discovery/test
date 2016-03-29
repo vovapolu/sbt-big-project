@@ -16,5 +16,5 @@ $ delete target/scala-2.10/test-discovery_2.10-v1.jar
 $ delete target/scala-2.10/test-discovery_2.10-v1-tests.jar
 $ absent target/scala-2.10/test-discovery_2.10-v1.jar
 $ absent target/scala-2.10/test-discovery_2.10-v1-tests.jar
-> test
-> test
+> testOnly *EmptyTest
+> testOnly *EmptyTest
