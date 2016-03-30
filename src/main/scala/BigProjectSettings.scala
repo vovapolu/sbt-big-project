@@ -462,7 +462,15 @@ object ClassLoaderHack {
         val urlClassPathField = classOf[java.net.URLClassLoader].getDeclaredField("ucp")
         urlClassPathField.setAccessible(true)
         val urlClassPath = urlClassPathField.get(u).asInstanceOf[sun.misc.URLClassPath]
-        val replacementUrlClassPath = new sun.misc.URLClassPath(u.getURLs)
+
+        val jarHandlerField = classOf[sun.misc.URLClassPath].getDeclaredField("jarHandler")
+        jarHandlerField.setAccessible(true)
+        val jarHandler = jarHandlerField.get(urlClassPath)
+
+        // URLs can be added dynamically, so get them from the CP not the CL
+        val replacementUrlClassPath = new sun.misc.URLClassPath(urlClassPath.getURLs())
+        jarHandlerField.set(replacementUrlClassPath, jarHandler)
+
         urlClassPathField.set(u, replacementUrlClassPath)
         // fresh, volatile / barrier, calls to the URLClassLoader
         // should not see the old URLClassPath instance, so close it.
