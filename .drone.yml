@@ -6,6 +6,7 @@ build:
     - SONATYPE_PASSWORD=$$SONATYPE_PASSWORD
   commands:
     - git log | head -n 20
+    - curl -O https://oss.sonatype.org/content/repositories/snapshots/com/fommil/class-monkey/1.7.0-SNAPSHOT/class-monkey-1.7.0-SNAPSHOT-assembly.jar
     - sbt compile
     - sbt scripted
     - if [ -z "$CI_PULL_REQUEST" ] ; then

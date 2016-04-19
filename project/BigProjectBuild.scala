@@ -30,7 +30,9 @@ object BigProjectBuild extends Build {
       name := "sbt-big-project",
       ScalariformKeys.preferences := FormattingPreferences().setPreference(AlignSingleLineCaseStatements, true),
       scriptedLaunchOpts := Seq(
-        "-Dplugin.version=" + version.value
+        "-Dplugin.version=" + version.value,
+        // must be downloaded separately, until I can work out the sbt magic
+        "-javaagent:" + (baseDirectory.value / "class-monkey-1.7.0-SNAPSHOT-assembly.jar")
         //"-Dsbt.task.timings=true"
       ),
       scriptedBufferLog := false
