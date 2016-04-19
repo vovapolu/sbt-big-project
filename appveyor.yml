@@ -15,7 +15,7 @@ install:
         )
   - cmd: SET JAVA_HOME=C:\Program Files\Java\jdk1.7.0
   - cmd: SET PATH=C:\sbt\sbt\bin;%JAVA_HOME%\bin;%PATH%
-  - cmd: SET SBT_OPTS=-XX:MaxPermSize=256m -Xss2m -Xmx2g
+  - cmd: SET SBT_OPTS=-XX:MaxPermSize=256m -Xss2m -Xmx512m
   - cmd: git config core.symlinks true
   - cmd: git reset --hard
 build_script:
