@@ -355,7 +355,6 @@ object BigProjectSettings extends Plugin {
    */
   def overrideProjectSettings(configs: Configuration*): Seq[Setting[_]] = Seq(
     exportJars := true,
-    forcegc in Global := true, // WORKAROUND https://github.com/sbt/sbt/issues/1223 (MOSTLY USELESS)
     trackInternalDependencies := TrackLevel.TrackIfMissing,
     transitiveUpdate <<= dynamicTransitiveUpdateTask,
     projectDescriptors <<= dynamicProjectDescriptorsTask,
@@ -364,6 +363,7 @@ object BigProjectSettings extends Plugin {
   ) ++ configs.flatMap { config =>
       inConfig(config)(
         Seq(
+          discoveredMainClasses := Nil,
           lastCompilableJar <<= lastCompilableJarTask,
           packageBin <<= dynamicPackageBinTask,
           dependencyClasspath <<= dynamicDependencyClasspathTask,
