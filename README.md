@@ -1,4 +1,6 @@
-[![Build Status](http://fommil.com/api/badges/fommil/sbt-big-project/status.svg)](http://fommil.com/fommil/sbt-big-project)
+| Windows | GNU / Linux |
+|---------|-------------|
+| [![Build status](https://ci.appveyor.com/api/projects/status/i4u2822n0r5rh0dq?svg=true)](https://ci.appveyor.com/project/fommil/sbt-big-project) | [![Build Status](http://fommil.com/api/badges/fommil/sbt-big-project/status.svg)](http://fommil.com/fommil/sbt-big-project) |
 
 The workflow introduced by this plugin gives *huge* time saving benefits to developers in extremely large projects (hundreds of `Project`s), where you may often make non-ABI changes in a middle layer and then run your application or tests in the top layer.
 
