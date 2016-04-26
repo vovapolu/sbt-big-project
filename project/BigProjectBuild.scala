@@ -32,9 +32,8 @@ object BigProjectBuild extends Build {
       scriptedLaunchOpts := Seq(
         "-XX:MaxPermSize=256m", "-Xss2m", "-Xmx512m",
         "-Dplugin.version=" + version.value,
-        // must be downloaded separately, until I can work out the sbt magic
-        "-javaagent:" + (baseDirectory.value / "class-monkey-1.7.0-SNAPSHOT-assembly.jar")
-        //"-Dsbt.task.timings=true"
+        // WORKAROUND https://github.com/sbt/sbt/issues/2568
+        "-javaagent:" + (baseDirectory.value / "class-monkey-1.7.0-assembly.jar")
       ),
       scriptedBufferLog := false
     )

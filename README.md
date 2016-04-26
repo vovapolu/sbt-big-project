@@ -26,7 +26,9 @@ This can be adopted as part of your workflow if you cherry pick or merge a colle
 
 This plugin uses a source-only distribution mechanism to make it easy to install in corporate environments.
 
-You must be using `sbt` version 0.13.10-RC1 or later.
+You must be using `sbt` version 0.13.11 or later.
+
+You must also be using [class-monkey](https://github.com/fommil/class-monkey), so download it and add to your `SBT_OPTS`.
 
 To install, copy the `BigProjectSettings.scala` from the latest tagged release into your `project` directory and then edit your `Project`s to have the `BigProjectKeys.overrideProjectSettings` applied for each of your configurations that the `Project` supports. e.g.
 
