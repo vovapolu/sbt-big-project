@@ -167,18 +167,22 @@ object BigProjectSettings extends Plugin {
    * We use the file's existence as the cache.
    */
   private def dynamicPackageBinTask: Def.Initialize[Task[File]] = (
+    classDirectory,
     (artifactPath in packageBin),
     lastCompilableJar,
     (streams in packageBin),
-    (packageConfiguration in packageBin).theTask
-  ).flatMap { (jar, lastOpt, s, configTask) =>
-      if (jar.exists()) {
+    packageOptions,
+    compile.theTask
+  ).flatMap { (classes, jar, lastOpt, s, options, compileTask) =>
+      if (jar.exists) {
         lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
         task(jar)
-      } else configTask.map { c =>
-        Package(c, s.cacheDirectory, s.log)
-        lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
-        jar
+      } else {
+        compileTask.map { compile =>
+          FastPackage(classes, jar, options, s.log)
+          lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
+          jar
+        }
       }
     }
 
@@ -381,4 +385,117 @@ object BigProjectSettings extends Plugin {
       )
     }
 
+}
+
+/**
+ * Replacement for Package, using NIO and multiple threads.
+ *
+ * Options are ignored (avoids constructing `Seq[(File, String)]`), we just package up the jar.
+ */
+object FastPackage {
+  import java.io._
+  import java.util.zip.{ZipEntry, CRC32}
+  import java.util.jar._
+  import java.nio._
+  import java.nio.file._
+  import java.nio.file.attribute._
+  import java.util.concurrent.ArrayBlockingQueue
+  import java.util.concurrent.atomic.AtomicBoolean
+
+  import scala.concurrent._
+  import scala.concurrent.duration._
+  import scala.util._
+  import scala.collection.JavaConverters._
+
+  import ExecutionContext.Implicits.global
+
+  type Reading = Future[(JarEntry, Array[Byte])]
+
+  /**
+   * @param classes the directory containing the classes
+   * @param jar     the output file, must not exist
+   * @param log     for sbt
+   */
+  def apply(classes: File, jar: File, options: Seq[PackageOption], log: Logger): Unit = {
+    // poor man's fan-out SCP
+    val finished: Reading = Future.successful((null, null))
+    val failure: Reading = Future.successful((null, null))
+
+    val entries = new ArrayBlockingQueue[Reading](8)
+    val base = classes.toPath
+
+    log.debug(s"scanning $classes")
+    Future { Files.walkFileTree(base, new Visitor(base, entries)) }.onComplete {
+      case Success(_) => entries.put(finished)
+      case Failure(_) => entries.put(failure)
+    }
+
+    log.info(s"Packaging $jar")
+    jar.getParentFile.mkdirs()
+
+    val manifest = new Manifest
+    val main = manifest.getMainAttributes
+    for (option <- options) {
+      option match {
+        case Package.JarManifest(mergeManifest) => Package.mergeManifests(manifest, mergeManifest)
+        case Package.MainClass(mainClassName) => main.put(Attributes.Name.MAIN_CLASS, mainClassName)
+        case Package.ManifestAttributes(attributes @ _*) => main.asScala ++= attributes
+        case _ => log.warn("Ignored unknown package option " + option)
+      }
+    }
+    Package.setVersion(main)
+
+    val file = new BufferedOutputStream(new FileOutputStream(jar), 10000000)
+    val out = new JarOutputStream(file, manifest)
+
+    try {
+      out.setLevel(9)
+
+      var done = false
+      while (!done) {
+        val next = entries.take()
+        if (next == finished) done = true
+        else if (next == failure) throw new IOException(s"problem scanning $classes")
+        else {
+          val (entry, data) = Await.result(next, Duration.Inf)
+
+          out.putNextEntry(entry)
+          out.write(data)
+          out.closeEntry()
+        }
+      }
+
+    } finally {
+      out.close()
+    }
+  }
+
+  private class Visitor(
+    base: Path,
+    queue: ArrayBlockingQueue[Reading]
+  ) extends SimpleFileVisitor[Path] {
+    override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+      // work begins immediately
+      val reader = Future {
+        val bytes = Files.readAllBytes(file)
+        val entry = new JarEntry(base.relativize(file).toString.replace("\\", "/"))
+
+        // don't compress small classes or anything else
+        if (attrs.size < 2048 || !file.endsWith(".class")) {
+          val crc = new CRC32
+          crc.update(bytes)
+          entry.setSize(bytes.length.toLong)
+          entry.setCrc(crc.getValue)
+          entry.setMethod(ZipEntry.STORED)
+        }
+
+        (entry, bytes)
+      }
+
+      // may block here
+      queue.put(reader)
+
+      FileVisitResult.CONTINUE
+    }
+  }
 }
