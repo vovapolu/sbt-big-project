@@ -354,6 +354,7 @@ object BigProjectSettings extends Plugin {
    * apply these overrides.
    */
   def overrideProjectSettings(configs: Configuration*): Seq[Setting[_]] = Seq(
+    forcegc := false, // class-monkey
     exportJars := true,
     trackInternalDependencies := TrackLevel.TrackIfMissing,
     transitiveUpdate <<= dynamicTransitiveUpdateTask,
