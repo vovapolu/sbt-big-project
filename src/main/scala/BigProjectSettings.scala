@@ -172,13 +172,14 @@ object BigProjectSettings extends Plugin {
     lastCompilableJar,
     (streams in packageBin),
     packageOptions,
-    compile.theTask
-  ).flatMap { (classes, jar, lastOpt, s, options, compileTask) =>
+    compile.theTask,
+    copyResources.theTask
+  ).flatMap { (classes, jar, lastOpt, s, options, compileTask, copyResourcesTask) =>
       if (jar.exists) {
         lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
         task(jar)
       } else {
-        compileTask.map { compile =>
+        (compileTask, copyResourcesTask).map { _ =>
           FastPackage(classes, jar, options, s.log)
           lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
           jar
