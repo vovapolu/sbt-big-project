@@ -425,6 +425,7 @@ object FastPackage {
     val base = classes.toPath
 
     log.debug(s"scanning $classes")
+    classes.mkdirs()
     Future { Files.walkFileTree(base, new Visitor(base, entries)) }.onComplete {
       case Success(_) => entries.put(finished)
       case Failure(_) => entries.put(failure)
