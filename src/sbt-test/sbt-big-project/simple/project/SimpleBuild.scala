@@ -34,7 +34,7 @@ object SimpleBuild extends Build {
   val c = simpleProject("c") dependsOn(b)
   val d = simpleProject("d") dependsOn(c)
   val e = simpleProject("e") dependsOn(c) settings (
-    BigProjectKeys.eclipseTestsFor := c
+    BigProjectKeys.eclipseTestsFor := Some(c)
   )
 
   val root = Project("root", file(".")) aggregate (a, b, c, d, e) settings (

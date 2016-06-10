@@ -10,7 +10,6 @@ import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt.Scoped.DefinableTask
 import sbt._
 import Keys._
-import IO._
 import sbt.inc.Analysis
 import sbt.inc.LastModified
 import scala.util.Try
@@ -45,7 +44,7 @@ object BigProjectKeys {
    *
    * WORKAROUND: https://bugs.eclipse.org/bugs/show_bug.cgi?id=224708
    */
-  val eclipseTestsFor = SettingKey[ProjectReference](
+  val eclipseTestsFor = SettingKey[Option[ProjectReference]](
     "eclipseTestsFor",
     "When defined, points to the project that this project is testing."
   )
@@ -87,7 +86,7 @@ object BigProjectSettings extends Plugin {
    */
   private def allPackageBins(structure: BuildStructure, log: Logger, proj: ProjectRef): Seq[File] =
     for {
-      p <- proj +: ((eclipseTestsFor in proj) get structure.data).toSeq
+      p <- proj +: ((eclipseTestsFor in proj) get structure.data).get.toSeq
       configs <- ((ivyConfigurations in p) get structure.data).toSeq
       config <- configs
       /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
@@ -98,7 +97,7 @@ object BigProjectSettings extends Plugin {
    * Try our best to delete a file that may be referenced by a stale
    * scala-compiler file handle (affects Windows).
    */
-  private def deleteLockedFile(log: Logger, file: File): Unit = {
+  def deleteLockedFile(log: Logger, file: File): Unit = {
     log.debug(s"Deleting $file")
     if (file.exists() && !file.delete()) {
       log.debug(s"Failed to delete $file")
@@ -188,10 +187,13 @@ object BigProjectSettings extends Plugin {
     }
 
   def createOrUpdateLast(log: Logger, jar: File, last: File): Unit =
-    if (jar.exists() && jar.lastModified != last.lastModified) {
-      log.info(s"backing up $jar to $last")
+    // since this is for IDE's, which may have a performacne cost to
+    // pay every time this file is updated, update every 12 hours.
+    if (jar.exists() && (!last.exists() || jar.lastModified >= (last.lastModified + 12 * 60 * 60 * 1000L))) {
+      log.info(s"Backing up ${jar.getName}")
       deleteLockedFile(log, last)
-      IO.copyFile(jar, last, preserveLastModified = true)
+      last.getParentFile().mkdirs()
+      Files.copy(jar.toPath, last.toPath)
     }
 
   /**
@@ -359,6 +361,7 @@ object BigProjectSettings extends Plugin {
    * apply these overrides.
    */
   def overrideProjectSettings(configs: Configuration*): Seq[Setting[_]] = Seq(
+    eclipseTestsFor := None,
     forcegc := false, // class-monkey
     exportJars := true,
     trackInternalDependencies := TrackLevel.TrackIfMissing,
@@ -432,7 +435,7 @@ object FastPackage {
       case Failure(_) => entries.put(failure)
     }
 
-    log.info(s"Packaging $jar")
+    log.info(s"Packaging ${jar.getName}")
     jar.getParentFile.mkdirs()
 
     val manifest = new Manifest

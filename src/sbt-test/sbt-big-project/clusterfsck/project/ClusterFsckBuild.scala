@@ -69,10 +69,10 @@ object ClusterFsckBuild extends Build {
     // customise individual Projects
     proj.id match {
       case "obf--1788614413" => proj.settings(
-        BigProjectKeys.eclipseTestsFor := LocalProject("obf-518286142")
+        BigProjectKeys.eclipseTestsFor := Some(LocalProject("obf-518286142"))
       )
       case "obf--694432521" => proj.settings(
-        BigProjectKeys.eclipseTestsFor := LocalProject("obf-1770460346")
+        BigProjectKeys.eclipseTestsFor := Some(LocalProject("obf-1770460346"))
       )
       case _ => proj
     }
