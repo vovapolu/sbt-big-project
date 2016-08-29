@@ -84,9 +84,14 @@ object BigProjectSettings extends Plugin {
    * transient dependency jars if this is an Eclipse-style test
    * project.
    */
-  private def allPackageBins(structure: BuildStructure, log: Logger, proj: ProjectRef): Seq[File] =
+  private def allPackageBins(
+    structure: BuildStructure,
+    log: Logger,
+    proj: ProjectRef,
+    skipEclipseMain: Boolean = false
+  ): Seq[File] =
     for {
-      p <- proj +: ((eclipseTestsFor in proj) get structure.data).get.toSeq
+      p <- proj +: { if (skipEclipseMain) Nil else ((eclipseTestsFor in proj) get structure.data).get.toSeq }
       configs <- ((ivyConfigurations in p) get structure.data).toSeq
       config <- configs
       /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
@@ -138,6 +143,25 @@ object BigProjectSettings extends Plugin {
       deleteLockedFile(s.log, jar)
     }
   }
+
+  /*
+  // Experimental alternative to deleteAllPackageBinTask. Question is
+  // if the .lastModified calls are faster than rebuilding... NIO
+  // would be much faster.
+  private def deleteOutdatedPackageBinTask = (thisProjectRef, state).map { (proj, s) =>
+    val structure = Project.extract(s).structure
+    for {
+      p <- proj +: ((eclipseTestsFor in proj) get structure.data).get.toSeq
+      configs <- ((ivyConfigurations in p) get structure.data).toSeq
+      config <- configs
+      // by going through the directories ourselves, we can exit early if we hit a change
+      // TODO: resource directories too
+      srcs <- ((sources in p in config) get structure.data).toSeq
+      /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
+      if jar.exists()
+    } yield jar
+  }
+   */
 
   // WORKAROUND https://github.com/sbt/sbt/issues/2417
   implicit class NoMacroTaskSupport[T](val t: TaskKey[T]) extends AnyVal {
@@ -285,13 +309,13 @@ object BigProjectSettings extends Plugin {
     val dependents = {
       for {
         proj <- structure.allProjects
-        dep <- proj.dependencies
-        resolved <- Project.getProject(dep.project, structure)
+        upstream <- proj.dependencies
+        resolved <- Project.getProject(upstream.project, structure)
       } yield (resolved, proj)
     }.groupBy {
-      case (child, parent) => child
+      case (parent, child) => parent
     }.map {
-      case (child, grouped) => (child, grouped.map(_._2).toSet)
+      case (parent, grouped) => (parent, grouped.map(_._2).toSet)
     }
 
     def deeper(p: ResolvedProject): Set[ResolvedProject] = {
@@ -307,11 +331,11 @@ object BigProjectSettings extends Plugin {
     deeper(proj).map { resolved => refs(resolved.id) }(collection.breakOut)
   }
 
-  private def downstreamAndSelfJars(structure: BuildStructure, log: Logger, proj: ProjectRef): Seq[File] = {
-    val downstream = dependents(structure, proj).toSeq
+  private def downstreamAndSelfJars(structure: BuildStructure, log: Logger, proj: ProjectRef): Set[File] = {
+    val downstream = dependents(structure, proj).toSet
     for {
-      p <- (downstream :+ proj)
-      jar <- allPackageBins(structure, log, p)
+      p <- (downstream + proj)
+      jar <- allPackageBins(structure, log, p, true)
     } yield jar
   }
 
@@ -322,6 +346,7 @@ object BigProjectSettings extends Plugin {
     (state, thisProjectRef).map { (s, proj) =>
       val structure = Project.extract(s).structure
       downstreamAndSelfJars(structure, s.log, proj).foreach { jar =>
+        s.log.info(s"deleting $jar")
         deleteLockedFile(s.log, jar)
       }
     }
@@ -377,14 +402,16 @@ object BigProjectSettings extends Plugin {
           packageBin <<= dynamicPackageBinTask,
           dependencyClasspath <<= dynamicDependencyClasspathTask,
           exportedProducts <<= dynamicExportedProductsTask,
-          compile <<= compile dependsOn deletePackageBinTask,
           runMain <<= runMain dependsOn deletePackageBinTask
         ) ++ {
             if (config == Test || config.extendsConfigs.contains(Test)) Seq(
+              // race condition, compiles start to fail if we do this...
+              // compile <<= compile dependsOn deleteAllPackageBinTask,
               test <<= test dependsOn deleteAllPackageBinTask,
               testOnly <<= testOnly dependsOn deleteAllPackageBinTask
+            ) else Seq(
+              compile <<= compile dependsOn deletePackageBinTask
             )
-            else Nil
           }
       )
     }
