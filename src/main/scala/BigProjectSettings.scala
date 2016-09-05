@@ -10,6 +10,8 @@ import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt.Scoped.DefinableTask
 import sbt._
 import Keys._
+import sbt.complete.DefaultParsers._
+import sbt.complete.{DefaultParsers, Parser}
 import sbt.inc.Analysis
 import sbt.inc.LastModified
 import scala.util.Try
@@ -379,6 +381,39 @@ object BigProjectSettings extends Plugin {
         }
       }
     }
+
+  case class JavaArgs(mainClass: String, envArgs: Map[String, String], jvmArgs: Seq[String], classArgs: Seq[String])
+
+  def runJavaArgsParser: (State, Seq[String]) => Parser[JavaArgs] =
+  {
+    import DefaultParsers._
+    val envArg = ScalaID ~ "=" ~ NotSpace map {
+      case key ~ _ ~ value => (key, value)
+    }
+    val jvmArg = "-" ~ NotSpace map {
+      case a ~ b  => a + b
+    }
+    (state, mainClasses) =>
+      (Space ~> repsep(envArg, Space).map(_.toMap)) ~
+      (Space ~> repsep(jvmArg, Space)) ~
+      (Space ~> token(NotSpace examples mainClasses.toSet)) ~ spaceDelimited("<arg>") map {
+        case envArgs ~ jvmArgs ~ mainClass ~ classArgs => JavaArgs(mainClass, envArgs, jvmArgs, classArgs)
+      }
+  }
+
+  def runMainTask(classpath: Def.Initialize[Task[Classpath]]): Def.Initialize[InputTask[Unit]] =
+  {
+    import sbinary.DefaultProtocol.StringFormat
+    val parser = loadForParser(discoveredMainClasses)((s, names) => runJavaArgsParser(s, names getOrElse Nil))
+    Def.inputTask {
+      val javaArgs = parser.parsed
+      toError(new ForkRun(ForkOptions(runJVMOptions = javaArgs.jvmArgs, envVars = javaArgs.envArgs)).run(
+        javaArgs.mainClass,
+        Attributed.data(classpath.value),
+        javaArgs.classArgs,
+        streams.value.log))
+    }
+  }
 
   /**
    * We want to be sure that this is the last collection of Settings
