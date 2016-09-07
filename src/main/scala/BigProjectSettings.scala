@@ -1,5 +1,6 @@
 // Copyright (C) 2015 - 2016 Sam Halliday
 // Licence: http://www.apache.org/licenses/LICENSE-2.0
+// Base works: see LICENSE-sbt
 package fommil
 
 import java.nio.file.{Files, Paths}
@@ -384,8 +385,7 @@ object BigProjectSettings extends Plugin {
 
   case class JavaArgs(mainClass: String, envArgs: Map[String, String], jvmArgs: Seq[String], classArgs: Seq[String])
 
-  def runJavaArgsParser: (State, Seq[String]) => Parser[JavaArgs] =
-  {
+  val runJavaArgsParser: Parser[JavaArgs] = {
     import DefaultParsers._
     val envArg = ScalaID ~ "=" ~ NotSpace map {
       case key ~ _ ~ value => (key, value)
@@ -393,24 +393,26 @@ object BigProjectSettings extends Plugin {
     val jvmArg = "-" ~ NotSpace map {
       case a ~ b  => a + b
     }
-    (state, mainClasses) =>
-      (Space ~> repsep(envArg, Space).map(_.toMap)) ~
-      (Space ~> repsep(jvmArg, Space)) ~
-      (Space ~> token(NotSpace examples mainClasses.toSet)) ~ spaceDelimited("<arg>") map {
-        case envArgs ~ jvmArgs ~ mainClass ~ classArgs => JavaArgs(mainClass, envArgs, jvmArgs, classArgs)
-      }
+    val mainClass = ScalaID ~ ("." ~ ScalaID).* map {
+      case first ~ seq => first + seq.map(t => t._1 + t._2).mkString
+    }
+    (Space ~> repsep(envArg, Space).map(_.toMap)) ~
+    (Space ~> repsep(jvmArg, Space)) ~
+    (Space ~> mainClass) ~ spaceDelimited("<arg>") map {
+      case envArgs ~ jvmArgs ~ mainClass ~ classArgs => JavaArgs(mainClass, envArgs, jvmArgs, classArgs)
+    }
   }
 
-  def runMainTask(classpath: Def.Initialize[Task[Classpath]]): Def.Initialize[InputTask[Unit]] =
-  {
-    import sbinary.DefaultProtocol.StringFormat
-    val parser = loadForParser(discoveredMainClasses)((s, names) => runJavaArgsParser(s, names getOrElse Nil))
+  def runJavaTask(classpath: Def.Initialize[Task[Classpath]]): Def.Initialize[InputTask[Unit]] = {
+    val parser = (s: State) => runJavaArgsParser
     Def.inputTask {
-      val javaArgs = parser.parsed
-      toError(new ForkRun(ForkOptions(runJVMOptions = javaArgs.jvmArgs, envVars = javaArgs.envArgs)).run(
-        javaArgs.mainClass,
+      val givenArgs = parser.parsed
+      val newJvmOptions = (javaOptions.value ++ givenArgs.jvmArgs).distinct
+      val newEnvVars = envVars.value ++ givenArgs.envArgs
+      toError(new ForkRun(ForkOptions(runJVMOptions = newJvmOptions, envVars = newEnvVars)).run(
+        givenArgs.mainClass,
         Attributed.data(classpath.value),
-        javaArgs.classArgs,
+        givenArgs.classArgs,
         streams.value.log))
     }
   }
