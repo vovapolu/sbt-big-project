@@ -452,7 +452,8 @@ object BigProjectSettings extends Plugin {
               // compile <<= compile dependsOn deleteAllPackageBinTask,
               test <<= test dependsOn deleteAllPackageBinTask,
               testOnly <<= testOnly dependsOn deleteAllPackageBinTask
-            ) else Seq(
+            )
+            else Seq(
               compile <<= compile dependsOn deletePackageBinTask
             )
           }

@@ -7,3 +7,7 @@ $ must-mirror args2 output_args2
 $ must-mirror args3 output_args3
 > run-java/runJava testing_key1=value1 testing_key2=value2 runjava.printArgs output_args4
 $ must-mirror args4 output_args4
+> run-java/runJava testing_default_key2=something -Dtesting_default_key1=something runjava.printArgs output_args5
+$ must-mirror args5 output_args5
+> run-java/runJava testing_key1=value1 testing_key2=value2 testing_default_key2=something -Dtesting_default_key1=something -Dtesting_key3=value3 -Xms2G -Xmx2G runjava.printArgs output_args6 -arg
+$ must-mirror args6 output_args6

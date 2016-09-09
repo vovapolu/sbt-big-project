@@ -15,11 +15,11 @@ object printArgs extends App {
   val properties = System.getProperties.toMap.toSeq.filter(_._1 startsWith "testing")
 
   val output = new PrintWriter(new File(args(0)))
-  output.write(properties.map(t => t._1 + "=" + t._2).mkString(" "))
+  output.write(properties.sorted.map(t => t._1 + "=" + t._2).mkString(" "))
   output.write("\n")
-  output.write(jvmArgs.mkString(" "))
+  output.write(jvmArgs.sorted.mkString(" "))
   output.write("\n")
-  output.write(envArgs.map(t => t._1 + "=" + t._2).mkString(" "))
+  output.write(envArgs.sorted.map(t => t._1 + "=" + t._2).mkString(" "))
   output.write("\n")
   output.write(args.mkString(" "))
   output.close

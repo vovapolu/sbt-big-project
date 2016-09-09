@@ -16,7 +16,9 @@ object runJavaBuild extends Build {
 
   val root = Project("run-java", file(".")).settings(
     ivyLoggingLevel := UpdateLogging.Quiet,
-    fork := true
+    fork := true,
+    javaOptions += "-Dtesting_default_key1=default_value1",
+    envVars += ("testing_default_key2", "defaule_value2")
   ).settings(
     BigProjectSettings.overrideProjectSettings(Compile, Test)
   )
