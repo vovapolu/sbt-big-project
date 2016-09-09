@@ -6,15 +6,16 @@ package fommil
 import java.nio.file.{Files, Paths}
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
+
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt.Scoped.DefinableTask
 import sbt._
 import Keys._
-import sbt.complete.DefaultParsers._
 import sbt.complete.{DefaultParsers, Parser}
 import sbt.inc.Analysis
 import sbt.inc.LastModified
+
 import scala.util.Try
 
 /**
@@ -76,6 +77,11 @@ object BigProjectKeys {
   val lastCompilableJar = TaskKey[Option[File]](
     "lastCompilableJar",
     "Points to a copy of packageBin that is updated when the packageBin is recreated."
+  )
+
+  val runJava = InputKey[Unit](
+    "runJava",
+    "Run user specified class with given jvm args and environment args that overrides system ones"
   )
 }
 
@@ -387,23 +393,23 @@ object BigProjectSettings extends Plugin {
 
   val runJavaArgsParser: Parser[JavaArgs] = {
     import DefaultParsers._
-    val envArg = ScalaID ~ "=" ~ NotSpace map {
+
+    val envArg = ScalaID ~ "=" ~ NotSpace <~ Space map {
       case key ~ _ ~ value => (key, value)
     }
-    val jvmArg = "-" ~ NotSpace map {
-      case a ~ b  => a + b
+    val jvmArg = "-" ~ NotSpace <~ Space map {
+      case a ~ b => a + b
     }
-    val mainClass = ScalaID ~ ("." ~ ScalaID).* map {
+    val mainClassPart = identifier(ScalaIDChar, charClass(isIDChar))
+    val mainClass = mainClassPart ~ ("." ~ mainClassPart).* map {
       case first ~ seq => first + seq.map(t => t._1 + t._2).mkString
     }
-    (Space ~> repsep(envArg, Space).map(_.toMap)) ~
-    (Space ~> repsep(jvmArg, Space)) ~
-    (Space ~> mainClass) ~ spaceDelimited("<arg>") map {
+    (Space ~> envArg.*.map(_.toMap) ~ jvmArg.* ~ mainClass ~ spaceDelimited("<arg>")) map {
       case envArgs ~ jvmArgs ~ mainClass ~ classArgs => JavaArgs(mainClass, envArgs, jvmArgs, classArgs)
     }
   }
 
-  def runJavaTask(classpath: Def.Initialize[Task[Classpath]]): Def.Initialize[InputTask[Unit]] = {
+  def runJavaTask: Def.Initialize[InputTask[Unit]] = {
     val parser = (s: State) => runJavaArgsParser
     Def.inputTask {
       val givenArgs = parser.parsed
@@ -411,9 +417,10 @@ object BigProjectSettings extends Plugin {
       val newEnvVars = envVars.value ++ givenArgs.envArgs
       toError(new ForkRun(ForkOptions(runJVMOptions = newJvmOptions, envVars = newEnvVars)).run(
         givenArgs.mainClass,
-        Attributed.data(classpath.value),
+        Attributed.data((fullClasspath in Compile).value),
         givenArgs.classArgs,
-        streams.value.log))
+        streams.value.log
+      ))
     }
   }
 
@@ -430,7 +437,8 @@ object BigProjectSettings extends Plugin {
     transitiveUpdate <<= dynamicTransitiveUpdateTask,
     projectDescriptors <<= dynamicProjectDescriptorsTask,
     breakingChange <<= breakingChangeTask,
-    breakOnChanges <<= breakOnChangesTask
+    breakOnChanges <<= breakOnChangesTask,
+    runJava <<= runJavaTask
   ) ++ configs.flatMap { config =>
       inConfig(config)(
         Seq(
@@ -446,7 +454,8 @@ object BigProjectSettings extends Plugin {
               // compile <<= compile dependsOn deleteAllPackageBinTask,
               test <<= test dependsOn deleteAllPackageBinTask,
               testOnly <<= testOnly dependsOn deleteAllPackageBinTask
-            ) else Seq(
+            )
+            else Seq(
               compile <<= compile dependsOn deletePackageBinTask
             )
           }
