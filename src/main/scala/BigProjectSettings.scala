@@ -6,7 +6,6 @@ package fommil
 import java.nio.file.{Files, Paths}
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
-
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt.Scoped.DefinableTask
@@ -15,7 +14,6 @@ import Keys._
 import sbt.complete.{DefaultParsers, Parser}
 import sbt.inc.Analysis
 import sbt.inc.LastModified
-
 import scala.util.Try
 
 /**
@@ -454,8 +452,7 @@ object BigProjectSettings extends Plugin {
               // compile <<= compile dependsOn deleteAllPackageBinTask,
               test <<= test dependsOn deleteAllPackageBinTask,
               testOnly <<= testOnly dependsOn deleteAllPackageBinTask
-            )
-            else Seq(
+            ) else Seq(
               compile <<= compile dependsOn deletePackageBinTask
             )
           }
