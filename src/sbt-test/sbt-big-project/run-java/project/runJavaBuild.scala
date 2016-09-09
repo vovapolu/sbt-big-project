@@ -1,4 +1,4 @@
-// Copyright (C) 2015 Sam Halliday
+// Copyright (C) 2015 Vladimir Polushin
 // License: Apache-2.0
 
 import sbt._
