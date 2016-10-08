@@ -5,7 +5,6 @@ package fommil
 import java.io.IOException
 import java.nio.file.attribute.BasicFileAttributes
 import java.nio.file._
-import java.time.Instant
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
