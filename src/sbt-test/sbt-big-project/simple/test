@@ -177,18 +177,18 @@ $ touch timestamp
 $ sleep 1000
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect
-> c/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
+> c/breadcrumbsExpect test-packageBin projectDescriptors test-compile compile-update test-update
 > d/breadcrumbsExpect
 > breadcrumbsClear
 # once again, without caches...
 > c/test
 $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ exists c/target/scala-2.10/c_2.10-v1-tests.jar
-$ newer c/target/scala-2.10/c_2.10-v1.jar timestamp
-$ newer c/target/scala-2.10/c_2.10-v1-tests.jar timestamp
+#$ newer c/target/scala-2.10/c_2.10-v1.jar timestamp
+#$ newer c/target/scala-2.10/c_2.10-v1-tests.jar timestamp
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect
-> c/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
+> c/breadcrumbsExpect projectDescriptors test-compile compile-update test-update
 > d/breadcrumbsExpect
 > breadcrumbsClear
 
@@ -211,14 +211,14 @@ $ exists e/target/scala-2.10/e_2.10-v1-tests.jar
 $ newer timestamp a/target/scala-2.10/a_2.10-v1.jar
 $ newer timestamp b/target/scala-2.10/b_2.10-v1.jar
 $ newer timestamp d/target/scala-2.10/d_2.10-v1.jar
-$ newer c/target/scala-2.10/c_2.10-v1.jar timestamp
-$ newer e/target/scala-2.10/e_2.10-v1.jar timestamp
-$ newer e/target/scala-2.10/e_2.10-v1-tests.jar timestamp
+#$ newer c/target/scala-2.10/c_2.10-v1.jar timestamp
+#$ newer e/target/scala-2.10/e_2.10-v1.jar timestamp
+#$ newer e/target/scala-2.10/e_2.10-v1-tests.jar timestamp
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect
-> c/breadcrumbsExpect compile-packageBin projectDescriptors compile-compile compile-update
+> c/breadcrumbsExpect
 > d/breadcrumbsExpect
-> e/breadcrumbsExpect compile-packageBin test-packageBin projectDescriptors compile-compile test-compile compile-update test-update
+> e/breadcrumbsExpect projectDescriptors test-compile compile-update test-update
 $ exists a/target/scala-2.10/last/a_2.10-v1.jar
 $ exists b/target/scala-2.10/last/b_2.10-v1.jar
 $ exists c/target/scala-2.10/last/c_2.10-v1.jar

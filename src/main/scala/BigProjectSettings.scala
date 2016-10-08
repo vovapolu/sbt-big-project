@@ -2,9 +2,14 @@
 // Licence: http://www.apache.org/licenses/LICENSE-2.0
 package fommil
 
-import java.nio.file.{Files, Paths}
+import java.io.IOException
+import java.nio.file.attribute.BasicFileAttributes
+import java.nio.file._
+import java.time.Instant
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
+
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt.Scoped.DefinableTask
@@ -12,7 +17,13 @@ import sbt._
 import Keys._
 import sbt.inc.Analysis
 import sbt.inc.LastModified
-import scala.util.Try
+
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success, Try}
+
+import ExecutionContext.Implicits.global
 
 /**
  * Publicly exposed keys for settings and tasks that the user may wish
@@ -144,24 +155,52 @@ object BigProjectSettings extends Plugin {
     }
   }
 
-  /*
+  private def changes(dirs: Seq[File], lastModified: Long) = {
+    val newChanges = new AtomicBoolean(false)
+    dirs.map(dir => Future {
+      Files.walkFileTree(dir.toPath, new SimpleFileVisitor[Path] {
+        override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+          super.visitFile(file, attrs)
+          if (attrs.lastModifiedTime.toMillis > lastModified) {
+            newChanges.getAndSet(true)
+          }
+
+          if (newChanges.get()) {
+            FileVisitResult.TERMINATE
+          } else {
+            FileVisitResult.CONTINUE
+          }
+        }
+      })
+    }).foreach(Await.ready(_, 10 minutes))
+    newChanges.get()
+  }
+
   // Experimental alternative to deleteAllPackageBinTask. Question is
   // if the .lastModified calls are faster than rebuilding... NIO
   // would be much faster.
-  private def deleteOutdatedPackageBinTask = (thisProjectRef, state).map { (proj, s) =>
-    val structure = Project.extract(s).structure
+  private def outdatedPackageBins(
+    structure: BuildStructure,
+    log: Logger,
+    proj: ProjectRef
+  ): Seq[File] =
     for {
       p <- proj +: ((eclipseTestsFor in proj) get structure.data).get.toSeq
       configs <- ((ivyConfigurations in p) get structure.data).toSeq
       config <- configs
       // by going through the directories ourselves, we can exit early if we hit a change
-      // TODO: resource directories too
-      srcs <- ((sources in p in config) get structure.data).toSeq
+      srcDirs <- ((sourceDirectories in p in config) get structure.data).toSeq
+      resourceDirs <- ((resourceDirectories in p in config) get structure.data).toSeq
       /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
-      if jar.exists()
+      if jar.exists() && (changes(srcDirs, jar.lastModified()) || changes(resourceDirs, jar.lastModified()))
     } yield jar
+
+  private def deleteOutdatedPackageBinsTask = (thisProjectRef, state).map { (proj, s) =>
+    val structure = Project.extract(s).structure
+    outdatedPackageBins(structure, s.log, proj).foreach { jar =>
+      deleteLockedFile(s.log, jar)
+    }
   }
-   */
 
   // WORKAROUND https://github.com/sbt/sbt/issues/2417
   implicit class NoMacroTaskSupport[T](val t: TaskKey[T]) extends AnyVal {
@@ -407,9 +446,10 @@ object BigProjectSettings extends Plugin {
             if (config == Test || config.extendsConfigs.contains(Test)) Seq(
               // race condition, compiles start to fail if we do this...
               // compile <<= compile dependsOn deleteAllPackageBinTask,
-              test <<= test dependsOn deleteAllPackageBinTask,
-              testOnly <<= testOnly dependsOn deleteAllPackageBinTask
-            ) else Seq(
+              test <<= test dependsOn deleteOutdatedPackageBinsTask,
+              testOnly <<= testOnly dependsOn deleteOutdatedPackageBinsTask
+            )
+            else Seq(
               compile <<= compile dependsOn deletePackageBinTask
             )
           }
@@ -431,7 +471,6 @@ object FastPackage {
   import java.nio.file._
   import java.nio.file.attribute._
   import java.util.concurrent.ArrayBlockingQueue
-  import java.util.concurrent.atomic.AtomicBoolean
 
   import scala.concurrent._
   import scala.concurrent.duration._
