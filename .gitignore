@@ -3,6 +3,8 @@
 
 target/
 
+class-monkey-1.7.0-assembly.jar
+
 Foo.scala
 FooTest.scala
 Bar.scala

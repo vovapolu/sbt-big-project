@@ -30,7 +30,7 @@ object BigProjectBuild extends Build {
       name := "sbt-big-project",
       ScalariformKeys.preferences := FormattingPreferences().setPreference(AlignSingleLineCaseStatements, true),
       scriptedLaunchOpts := Seq(
-        "-XX:MaxPermSize=256m", "-Xss2m", "-Xmx512m",
+        "-XX:MaxPermSize=256m", "-Xss2m", "-Xmx1g",
         "-Dplugin.version=" + version.value,
         // WORKAROUND https://github.com/sbt/sbt/issues/2568
         "-javaagent:" + (baseDirectory.value / "class-monkey-1.7.0-assembly.jar")
