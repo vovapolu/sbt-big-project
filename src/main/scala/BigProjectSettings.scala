@@ -155,7 +155,6 @@ object BigProjectSettings extends Plugin {
   }
 
   private def changes(dirs: Seq[File], lastModified: Long) = {
-    val start = System.currentTimeMillis()
     val newChanges = new AtomicBoolean(false)
     dirs.map(dir => Future {
       Files.walkFileTree(dir.toPath, new SimpleFileVisitor[Path] {
@@ -173,8 +172,6 @@ object BigProjectSettings extends Plugin {
         }
       })
     }).foreach(Await.ready(_, 10.minutes))
-    val end = System.currentTimeMillis()
-    println(s"scanning took ${end - start} millis")
     newChanges.get()
   }
 
