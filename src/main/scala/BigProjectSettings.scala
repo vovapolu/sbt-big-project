@@ -155,6 +155,7 @@ object BigProjectSettings extends Plugin {
   }
 
   private def changes(dirs: Seq[File], lastModified: Long) = {
+    val start = System.currentTimeMillis()
     val newChanges = new AtomicBoolean(false)
     dirs.map(dir => Future {
       Files.walkFileTree(dir.toPath, new SimpleFileVisitor[Path] {
@@ -171,7 +172,9 @@ object BigProjectSettings extends Plugin {
           }
         }
       })
-    }).foreach(Await.ready(_, 10 minutes))
+    }).foreach(Await.ready(_, 10.minutes))
+    val end = System.currentTimeMillis()
+    println(s"scanning took ${end - start} millis")
     newChanges.get()
   }
 
@@ -191,7 +194,7 @@ object BigProjectSettings extends Plugin {
       srcDirs <- ((sourceDirectories in p in config) get structure.data).toSeq
       resourceDirs <- ((resourceDirectories in p in config) get structure.data).toSeq
       /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
-      if jar.exists() && (changes(srcDirs, jar.lastModified()) || changes(resourceDirs, jar.lastModified()))
+      if jar.exists() && changes(srcDirs ++ resourceDirs, jar.lastModified())
     } yield jar
 
   private def deleteOutdatedPackageBinsTask = (thisProjectRef, state).map { (proj, s) =>
