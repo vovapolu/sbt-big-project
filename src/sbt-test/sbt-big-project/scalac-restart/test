@@ -1,0 +1,7 @@
+> compile
+$ delete a/src/main/scala/foo.scala
+> a/compile
+
+# should fail becuase bar.scala references foo.scala, but scalac has
+# the old a.jar cached and the scalaInstance must be restarted
+-> b/compile

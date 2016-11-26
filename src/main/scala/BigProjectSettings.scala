@@ -132,7 +132,7 @@ object BigProjectSettings extends Plugin {
    * packageBin associated to a project when compiling that project so
    * that we never have stale jars.
    */
-  private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
+  def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
     deleteLockedFile(s.log, jar)
   }
 
@@ -234,8 +234,9 @@ object BigProjectSettings extends Plugin {
     (streams in packageBin),
     packageOptions,
     compile.theTask,
-    copyResources.theTask
-  ).flatMap { (classes, jar, lastOpt, s, options, compileTask, copyResourcesTask) =>
+    copyResources.theTask,
+    state
+  ).flatMap { (classes, jar, lastOpt, s, options, compileTask, copyResourcesTask, st) =>
       if (jar.exists) {
         lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
         task(jar)
@@ -243,6 +244,13 @@ object BigProjectSettings extends Plugin {
         (compileTask, copyResourcesTask).map { _ =>
           FastPackage(classes, jar, options, s.log)
           lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
+
+          val clazz = Class.forName("sbt.classpath.ClassLoaderCache")
+          val field = clazz.getDeclaredField("delegate")
+          field.setAccessible(true)
+          val delegate = field.get(st.classLoaderCache).asInstanceOf[java.util.HashMap[_, _]]
+          delegate.clear() // could close the values too, but they are also private
+
           jar
         }
       }
@@ -490,11 +498,15 @@ object FastPackage {
     val finished: Reading = Future.successful((null, null))
     val failure: Reading = Future.successful((null, null))
 
+    if (!classes.isDirectory) {
+      log.warn(s"$classes doesn't exist, dummy package?")
+      classes.mkdirs()
+    }
+
     val entries = new ArrayBlockingQueue[Reading](8)
     val base = classes.toPath
 
     log.debug(s"scanning $classes")
-    classes.mkdirs()
     Future { Files.walkFileTree(base, new Visitor(base, entries)) }.onComplete {
       case Success(_) => entries.put(finished)
       case Failure(_) => entries.put(failure)
