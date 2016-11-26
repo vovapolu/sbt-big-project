@@ -58,8 +58,9 @@ $ absent d/target/scala-2.10/last/d_2.10-v1.jar
 # make a trivial change in b, a d/compile should not recompile
 # (this is expected, but not ideal, and may be addressed)
 $ touch timestamp
-$ sleep 1000
+$ sleep 2000
 $ touch b/main/src/scala/b/Foo.scala
+$ sleep 2000
 > d/compile
 $ newer timestamp b/target/scala-2.10/b_2.10-v1.jar
 > breadcrumbsClear
@@ -89,7 +90,7 @@ $ delete b/target/scala-2.10/classes
 
 # b/compile recompiles b and delete's (only) its jar
 $ touch timestamp
-$ sleep 1000
+$ sleep 2000
 > b/compile
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect compile-update compile-compile projectDescriptors
@@ -112,7 +113,7 @@ $ newer timestamp c/target/scala-2.10/c_2.10-v1.jar
 
 # recompiling d again should (only) rebuild b's jars
 $ touch timestamp
-$ sleep 1000
+$ sleep 2000
 > d/compile
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect compile-update compile-compile compile-packageBin projectDescriptors
@@ -174,7 +175,7 @@ $ exists d/target/scala-2.10/last/d_2.10-v1.jar
 $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ exists c/target/scala-2.10/c_2.10-v1-tests.jar
 $ touch timestamp
-$ sleep 1000
+$ sleep 2000
 > a/breadcrumbsExpect
 > b/breadcrumbsExpect
 > c/breadcrumbsExpect test-packageBin projectDescriptors test-compile compile-update test-update
@@ -197,9 +198,9 @@ $ exists c/target/scala-2.10/c_2.10-v1-tests.jar
 $ exists d/target/scala-2.10/d_2.10-v1.jar
 $ exists e/target/scala-2.10/e_2.10-v1.jar
 $ exists e/target/scala-2.10/e_2.10-v1-tests.jar
-$ sleep 1000
+$ sleep 2000
 $ touch timestamp
-$ sleep 1000
+$ sleep 2000
 > breadcrumbsClear
 > e/test
 $ exists a/target/scala-2.10/a_2.10-v1.jar
@@ -218,7 +219,7 @@ $ newer timestamp d/target/scala-2.10/d_2.10-v1.jar
 > b/breadcrumbsExpect
 > c/breadcrumbsExpect
 > d/breadcrumbsExpect
-> e/breadcrumbsExpect projectDescriptors test-compile compile-update test-update
+> e/breadcrumbsExpect test-packageBin projectDescriptors test-compile compile-update test-update
 $ exists a/target/scala-2.10/last/a_2.10-v1.jar
 $ exists b/target/scala-2.10/last/b_2.10-v1.jar
 $ exists c/target/scala-2.10/last/c_2.10-v1.jar
@@ -243,7 +244,7 @@ $ exists c/target/scala-2.10/c_2.10-v1.jar
 $ exists d/target/scala-2.10/d_2.10-v1.jar
 $ exists e/target/scala-2.10/e_2.10-v1.jar
 $ exists e/target/scala-2.10/e_2.10-v1-tests.jar
-$ sleep 1000
+$ sleep 2000
 $ touch b/src/main/scala/b/Foo.scala
 > breakOnChanges
 $ exists a/target/scala-2.10/a_2.10-v1.jar
