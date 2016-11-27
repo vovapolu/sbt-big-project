@@ -1,3 +1,6 @@
+branches:
+  only:
+  - master
 install:
   - ps: |
       Add-Type -AssemblyName System.IO.Compression.FileSystem
