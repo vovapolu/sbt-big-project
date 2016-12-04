@@ -3,9 +3,13 @@
 // Base works: see LICENSE-sbt
 package fommil
 
-import java.nio.file.{Files, Paths}
+import java.io.IOException
+import java.nio.file.attribute.BasicFileAttributes
+import java.nio.file._
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
+
 import org.apache.ivy.core.module.descriptor.ModuleDescriptor
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import sbt.Scoped.DefinableTask
@@ -14,7 +18,13 @@ import Keys._
 import sbt.complete.{DefaultParsers, Parser}
 import sbt.inc.Analysis
 import sbt.inc.LastModified
-import scala.util.Try
+
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success, Try}
+
+import ExecutionContext.Implicits.global
 
 /**
  * Publicly exposed keys for settings and tasks that the user may wish
@@ -129,7 +139,7 @@ object BigProjectSettings extends Plugin {
    * packageBin associated to a project when compiling that project so
    * that we never have stale jars.
    */
-  private def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
+  def deletePackageBinTask = (artifactPath in packageBin, state).map { (jar, s) =>
     deleteLockedFile(s.log, jar)
   }
 
@@ -151,24 +161,52 @@ object BigProjectSettings extends Plugin {
     }
   }
 
-  /*
+  private def changes(dirs: Seq[File], lastModified: Long) = {
+    val newChanges = new AtomicBoolean(false)
+    dirs.map(dir => Future {
+      Files.walkFileTree(dir.toPath, new SimpleFileVisitor[Path] {
+        override def visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult = {
+          super.visitFile(file, attrs)
+          if (attrs.lastModifiedTime.toMillis > lastModified) {
+            newChanges.getAndSet(true)
+          }
+
+          if (newChanges.get()) {
+            FileVisitResult.TERMINATE
+          } else {
+            FileVisitResult.CONTINUE
+          }
+        }
+      })
+    }).foreach(Await.ready(_, 10.minutes))
+    newChanges.get()
+  }
+
   // Experimental alternative to deleteAllPackageBinTask. Question is
   // if the .lastModified calls are faster than rebuilding... NIO
   // would be much faster.
-  private def deleteOutdatedPackageBinTask = (thisProjectRef, state).map { (proj, s) =>
-    val structure = Project.extract(s).structure
+  private def outdatedPackageBins(
+    structure: BuildStructure,
+    log: Logger,
+    proj: ProjectRef
+  ): Seq[File] =
     for {
       p <- proj +: ((eclipseTestsFor in proj) get structure.data).get.toSeq
       configs <- ((ivyConfigurations in p) get structure.data).toSeq
       config <- configs
       // by going through the directories ourselves, we can exit early if we hit a change
-      // TODO: resource directories too
-      srcs <- ((sources in p in config) get structure.data).toSeq
+      srcDirs <- ((sourceDirectories in p in config) get structure.data).toSeq
+      resourceDirs <- ((resourceDirectories in p in config) get structure.data).toSeq
       /* whisky in the */ jar <- (artifactPath in packageBin in config in p) get structure.data
-      if jar.exists()
+      if jar.exists() && changes(srcDirs ++ resourceDirs, jar.lastModified())
     } yield jar
+
+  private def deleteOutdatedPackageBinsTask = (thisProjectRef, state).map { (proj, s) =>
+    val structure = Project.extract(s).structure
+    outdatedPackageBins(structure, s.log, proj).foreach { jar =>
+      deleteLockedFile(s.log, jar)
+    }
   }
-   */
 
   // WORKAROUND https://github.com/sbt/sbt/issues/2417
   implicit class NoMacroTaskSupport[T](val t: TaskKey[T]) extends AnyVal {
@@ -203,8 +241,9 @@ object BigProjectSettings extends Plugin {
     (streams in packageBin),
     packageOptions,
     compile.theTask,
-    copyResources.theTask
-  ).flatMap { (classes, jar, lastOpt, s, options, compileTask, copyResourcesTask) =>
+    copyResources.theTask,
+    state
+  ).flatMap { (classes, jar, lastOpt, s, options, compileTask, copyResourcesTask, st) =>
       if (jar.exists) {
         lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
         task(jar)
@@ -212,6 +251,13 @@ object BigProjectSettings extends Plugin {
         (compileTask, copyResourcesTask).map { _ =>
           FastPackage(classes, jar, options, s.log)
           lastOpt.foreach { last => createOrUpdateLast(s.log, jar, last) }
+
+          val clazz = Class.forName("sbt.classpath.ClassLoaderCache")
+          val field = clazz.getDeclaredField("delegate")
+          field.setAccessible(true)
+          val delegate = field.get(st.classLoaderCache).asInstanceOf[java.util.HashMap[_, _]]
+          delegate.clear() // could close the values too, but they are also private
+
           jar
         }
       }
@@ -450,8 +496,8 @@ object BigProjectSettings extends Plugin {
             if (config == Test || config.extendsConfigs.contains(Test)) Seq(
               // race condition, compiles start to fail if we do this...
               // compile <<= compile dependsOn deleteAllPackageBinTask,
-              test <<= test dependsOn deleteAllPackageBinTask,
-              testOnly <<= testOnly dependsOn deleteAllPackageBinTask
+              test <<= test dependsOn deleteOutdatedPackageBinsTask,
+              testOnly <<= testOnly dependsOn deleteOutdatedPackageBinsTask
             )
             else Seq(
               compile <<= compile dependsOn deletePackageBinTask
@@ -475,7 +521,6 @@ object FastPackage {
   import java.nio.file._
   import java.nio.file.attribute._
   import java.util.concurrent.ArrayBlockingQueue
-  import java.util.concurrent.atomic.AtomicBoolean
 
   import scala.concurrent._
   import scala.concurrent.duration._
@@ -496,11 +541,15 @@ object FastPackage {
     val finished: Reading = Future.successful((null, null))
     val failure: Reading = Future.successful((null, null))
 
+    if (!classes.isDirectory) {
+      log.warn(s"$classes doesn't exist, dummy package?")
+      classes.mkdirs()
+    }
+
     val entries = new ArrayBlockingQueue[Reading](8)
     val base = classes.toPath
 
     log.debug(s"scanning $classes")
-    classes.mkdirs()
     Future { Files.walkFileTree(base, new Visitor(base, entries)) }.onComplete {
       case Success(_) => entries.put(finished)
       case Failure(_) => entries.put(failure)

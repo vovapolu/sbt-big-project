@@ -5,10 +5,20 @@ build:
     - SONATYPE_USERNAME=$$SONATYPE_USERNAME
     - SONATYPE_PASSWORD=$$SONATYPE_PASSWORD
   commands:
-    - git log | head -n 20
+    - git log | head -n 20 ; git fetch --tags
+    - if $(git grep -qE "TODO|FIXME" -- `git ls-files | grep -v .drone.yml`) ; then
+        echo "Please remove TODO or FIXME. Create an issue at GitHub instead." ;
+        exit 1 ;
+      fi
+    - host `curl -s http://httpbin.org/ip | jq -r '.origin'` || true ;
+    - sbt compile doc;
+      if $(! git diff --exit-code --quiet) ; then
+        echo "Code formatting does not meet the project's standards:" ;
+        git --no-pager diff ;
+        exit 1 ;
+      fi
     - curl -O https://repo1.maven.org/maven2/com/fommil/class-monkey/1.7.0/class-monkey-1.7.0-assembly.jar
-    - sbt compile
-    - sbt scripted
+    - sbt scripted ;
     - if [ -z "$CI_PULL_REQUEST" ] ; then
         sbt publish ;
       fi
